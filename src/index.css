@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+html {
+  background-color: #092327;
+  color: white;
+}
+
 :root {
   --color-darkblue: #092327;
   --color-lightblue: #06BCC1;
@@ -12,8 +17,10 @@
 }
 
 button {
-  background-color: var(--color-orange);
-  padding: 4px 10px;
-  border-radius: 10px;
+  background-color: var(--color-lightred);
   text-align: center;
+}
+
+label {
+  background-color: var(--color-lightred);
 }
