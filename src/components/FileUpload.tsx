@@ -14,9 +14,6 @@ export default function FileUpload() {
     }
   }
 
-  function fileSave(){
-    
-  }
 
   return (
     <div className=' w-1/2 flex h-70 bg-darkblue flex-col p-10 items-center justify-center'>
@@ -35,7 +32,7 @@ export default function FileUpload() {
           </div>
         )}
         {file && status !== 'uploading' && 
-        <button onClick={fileSave} className="rounded-xl px-2 py-2" id='submit'>Submit Clip</button>
+        <button className="rounded-xl px-2 py-2" id='submit'>Submit Clip</button>
         }
     </div>
   )
