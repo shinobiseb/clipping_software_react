@@ -1,5 +1,7 @@
-import { ChangeEvent, useState } from "react"
+import { ChangeEvent, useEffect, useRef, useState } from "react"
 import "../index.css"
+import { FFmpeg } from "@ffmpeg/ffmpeg"
+import { fetchFile, toBlobURL } from "@ffmpeg/util"
 
 export default function FileUpload() {
 
@@ -7,6 +9,9 @@ export default function FileUpload() {
 
   const [file, setFile] = useState<File | null>(null)
   const [status, setStatus] = useState<statusType>('idle')
+  const [ready, setReady] = useState(false)
+
+  const ffmpegRef = useRef(new FFmpeg())
 
   function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     if(e.target.files) {
@@ -14,9 +19,20 @@ export default function FileUpload() {
     }
   }
 
-  function fileSave(){
-    
+  const loadFFmpeg = async ()=> {
+    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.10/dist/esm'
+
+    const ffmpeg = ffmpegRef.current;
+    await ffmpeg.load({
+      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+      wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+    });
+    setReady(true);
   }
+
+  useEffect(()=>{
+    loadFFmpeg();
+  },[])
 
   return (
     <div className=' w-1/2 flex h-70 bg-darkblue flex-col p-10 items-center justify-center'>
@@ -24,7 +40,7 @@ export default function FileUpload() {
         <ul className='flex justify-around w-full px-5'>
             <section className="flex">
               <label className="rounded-xl px-2 py-2 cursor-pointer" htmlFor="UploadClip">Select Clip</label>
-              <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" name="uploadClip" id="UploadClip" />
+              <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" name="uploadClip" id="UploadClip"/>
             </section>
         </ul>
         {file && (
@@ -35,7 +51,7 @@ export default function FileUpload() {
           </div>
         )}
         {file && status !== 'uploading' && 
-        <button onClick={fileSave} className="rounded-xl px-2 py-2" id='submit'>Submit Clip</button>
+        <button className="rounded-xl px-2 py-2" id='submit'>Submit Clip</button>
         }
     </div>
   )
