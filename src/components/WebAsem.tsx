@@ -66,9 +66,9 @@ export default function WebAsem() {
               <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" name="uploadClip" id="UploadClip"/>
             </section>
             <video ref={videoRef} controls></video><br />
-            <button onClick={transcode}>Transcode webm to mp4</button>
+            {uploadedVid ? <button onClick={transcode}>Transcode webm to mp4</button> : <p>Upload Video to Continue</p>}
+            
             <p ref={messageRef}></p>
-            <p>Open Developer Tools (Ctrl+Shift+I) to View Logs</p>
         </main>
     ) : (
         <h3>Loading...</h3>
