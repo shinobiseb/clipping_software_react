@@ -7,6 +7,8 @@ export default function WebAsem() {
     const ffmpegRef = useRef<FFmpeg | null>(null);
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const messageRef = useRef<HTMLParagraphElement | null>(null);
+    const startRef = useRef<HTMLInputElement | null>(null);
+    const endRef = useRef<HTMLInputElement | null>(null);
     const [uploadedVid, setUploadedVid] = useState<File | null>(null)
 
     useEffect(()=> {
@@ -50,24 +52,29 @@ export default function WebAsem() {
         const arrayBuffer = await video.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
         
-        await ffmpeg.writeFile('input.webm', uint8Array);
-        await ffmpeg.exec(['-i', 'input.webm', 'output.mp4']);
+        await ffmpeg.writeFile('input.mp4', uint8Array);
+        await ffmpeg.exec(['-i', 'input.mp4', 'output.mp4']);
         const data = await ffmpeg.readFile('output.mp4');
         
         if (videoRef.current) {
             videoRef.current.src = URL.createObjectURL(new Blob([data], { type: 'video/mp4' }));
-        }
+        } 
     };
 
     return loaded ? (
         <main className='flex flex-col justify-evenly h-1/2 items-center'>
+            <video ref={videoRef} controls></video>
+            <section>
+                <label htmlFor="startTime">Start Time</label>
+                <input ref={startRef} type="time" id='startTime' step="00.01"/>
+                <label htmlFor="endTime">End Time</label>
+                <input ref={endRef} type="time" id='endTime' step="00.01"/>
+            </section>
             <section className="flex">
               <label className="rounded-xl px-2 py-2 cursor-pointer" htmlFor="UploadClip">Select Clip</label>
               <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" name="uploadClip" id="UploadClip"/>
             </section>
-            <video ref={videoRef} controls></video><br />
-            {uploadedVid ? <button onClick={transcode}>Transcode webm to mp4</button> : <p>Upload Video to Continue</p>}
-            
+            {uploadedVid ? <button className='rounded-xl px-2 py-2 cursor-pointer' onClick={transcode}>Transcode webm to mp4</button> : null}
             <p ref={messageRef}></p>
         </main>
     ) : (
