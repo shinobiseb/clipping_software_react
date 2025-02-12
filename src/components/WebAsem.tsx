@@ -53,7 +53,14 @@ export default function WebAsem() {
         const uint8Array = new Uint8Array(arrayBuffer);
         
         await ffmpeg.writeFile('input.mp4', uint8Array);
-        await ffmpeg.exec(['-i', 'input.mp4', 'output.mp4']);
+        //ffmpeg -ss 00:01:00 -to 00:02:00 -i input.mp4 -c copy output.mp4
+        if(!startRef.current || !endRef.current) {
+            console.error("StartRef or EndRef Not Valid")
+            return
+        }
+        const command = ['-ss', startRef.current.value, '-to', endRef.current.value,'-i', 'input.mp4', '-c', 'copy', 'output.mp4']
+        console.log(command)
+        await ffmpeg.exec(command);
         const data = await ffmpeg.readFile('output.mp4');
         
         if (videoRef.current) {
