@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, ChangeEvent } from 'react';
 import { toBlobURL } from '@ffmpeg/util';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
+import ReactPlayer from 'react-player';
 
 export default function WebAsem() {
     const [loaded, setLoaded] = useState<boolean>(false);
@@ -10,6 +11,7 @@ export default function WebAsem() {
     const startRef = useRef<HTMLInputElement | null>(null);
     const endRef = useRef<HTMLInputElement | null>(null);
     const [uploadedVid, setUploadedVid] = useState<File | null>(null)
+    const [vidSrc, setVidSrc] = useState<string | null>(null)
 
     useEffect(()=> {
         load()
@@ -42,7 +44,7 @@ export default function WebAsem() {
         setLoaded(true);
     };
 
-    const transcode = async () => {
+    const trimVideo = async () => {
         const ffmpeg = ffmpegRef.current;
         if (!ffmpeg) return;
         if(!uploadedVid) console.error("No Video");
@@ -64,13 +66,15 @@ export default function WebAsem() {
         const data = await ffmpeg.readFile('output.mp4');
         
         if (videoRef.current) {
-            videoRef.current.src = URL.createObjectURL(new Blob([data], { type: 'video/mp4' }));
+            let videoURL = URL.createObjectURL(new Blob([data], { type: 'video/mp4' }))
+            videoRef.current.src = videoURL;
+            setVidSrc(videoURL)
         } 
     };
 
     return loaded ? (
         <main className='flex flex-col justify-evenly h-1/2 items-center'>
-            <video ref={videoRef} controls></video>
+            {vidSrc ? <ReactPlayer url={vidSrc} controls={true}/> : null}
             <section>
                 <label htmlFor="startTime">Start Time</label>
                 <input ref={startRef} type="time" id='startTime' step="00.01"/>
@@ -81,7 +85,7 @@ export default function WebAsem() {
               <label className="rounded-xl px-2 py-2 cursor-pointer" htmlFor="UploadClip">Select Clip</label>
               <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" name="uploadClip" id="UploadClip"/>
             </section>
-            {uploadedVid ? <button className='rounded-xl px-2 py-2 cursor-pointer' onClick={transcode}>Transcode webm to mp4</button> : null}
+            {uploadedVid ? <button className='rounded-xl px-2 py-2 cursor-pointer' onClick={trimVideo}>Trim Video</button> : null}
             <p ref={messageRef}></p>
         </main>
     ) : (
