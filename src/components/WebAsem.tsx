@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, ChangeEvent } from 'react';
 import { toBlobURL } from '@ffmpeg/util';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import ReactPlayer from 'react-player';
+import Slider from './Slider';
 
 export default function WebAsem() {
     const [loaded, setLoaded] = useState<boolean>(false);
@@ -17,11 +17,30 @@ export default function WebAsem() {
         load()
     }, [])
 
+    useEffect(()=> {
+        if(uploadedVid) {
+            loadVideoIntoPreview()
+        }
+    }, [uploadedVid])
+
+    async function loadVideoIntoPreview() {
+    if (!uploadedVid) return;
+    const videoURL = URL.createObjectURL(uploadedVid);
+    if (videoRef.current) {
+        videoRef.current.src = videoURL;
+        setVidSrc(videoURL);
+        console.log("Video Loaded", videoURL);
+    } else {
+        console.error("Video not loaded")
+    }
+}
+
+
     function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
         if(e.target.files) {
           setUploadedVid(e.target.files[0])
           if(!uploadedVid) return
-          console.log(uploadedVid.name, uploadedVid.name)
+          console.log("Video Uploaded")
         }
       }
 
@@ -29,7 +48,6 @@ export default function WebAsem() {
         const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
         const ffmpeg = new FFmpeg();
         ffmpegRef.current = ffmpeg;
-        
         ffmpeg.on('log', ({ message }: { message: string }) => {
             if(!messageRef.current) return
             messageRef.current.innerHTML = message;
@@ -47,15 +65,11 @@ export default function WebAsem() {
     const trimVideo = async () => {
         const ffmpeg = ffmpegRef.current;
         if (!ffmpeg) return;
-        if(!uploadedVid) console.error("No Video");
-        
         const video = uploadedVid;
         if(!video) return;
         const arrayBuffer = await video.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
-        
         await ffmpeg.writeFile('input.mp4', uint8Array);
-        //ffmpeg -ss 00:01:00 -to 00:02:00 -i input.mp4 -c copy output.mp4
         if(!startRef.current || !endRef.current) {
             console.error("StartRef or EndRef Not Valid")
             return
@@ -64,18 +78,20 @@ export default function WebAsem() {
         console.log(command)
         await ffmpeg.exec(command);
         const data = await ffmpeg.readFile('output.mp4');
-        
         if (videoRef.current) {
             let videoURL = URL.createObjectURL(new Blob([data], { type: 'video/mp4' }))
             videoRef.current.src = videoURL;
             setVidSrc(videoURL)
+            console.log("Video Loaded", vidSrc)
         } 
     };
 
     return loaded ? (
         <main className='flex flex-col justify-evenly h-1/2 items-center'>
-            <video ref={videoRef} controls></video>
-            {vidSrc ? <ReactPlayer url={vidSrc} controls={true}/> : null}
+            {/* <Slider/> */}
+            <input defaultValue={0} min={0} max={100} className='w-full' type="range" name="" id="" />
+            <video className='w-full' ref={videoRef} controls></video>
+            {/* {vidSrc ? <ReactPlayer url={vidSrc} controls={true}/> : null} */}
             <section>
                 <label htmlFor="startTime">Start Time</label>
                 <input ref={startRef} type="time" id='startTime' step="00.01"/>
