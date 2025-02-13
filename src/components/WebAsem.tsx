@@ -74,6 +74,7 @@ export default function WebAsem() {
 
     return loaded ? (
         <main className='flex flex-col justify-evenly h-1/2 items-center'>
+            <video ref={videoRef} controls></video>
             {vidSrc ? <ReactPlayer url={vidSrc} controls={true}/> : null}
             <section>
                 <label htmlFor="startTime">Start Time</label>
