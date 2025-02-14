@@ -2,6 +2,7 @@ import { useRef, useState, useEffect, ChangeEvent } from 'react';
 import { toBlobURL } from '@ffmpeg/util';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import Slider from './Slider';
+import ReactPlayer from 'react-player';
 
 export default function WebAsem() {
     const [loaded, setLoaded] = useState<boolean>(false);
@@ -10,39 +11,55 @@ export default function WebAsem() {
     const messageRef = useRef<HTMLParagraphElement | null>(null);
     const startRef = useRef<HTMLInputElement | null>(null);
     const endRef = useRef<HTMLInputElement | null>(null);
-    const [uploadedVid, setUploadedVid] = useState<File | null>(null)
+    const [uploadedVidFile, setUploadedVidFile] = useState<File | null>(null)
     const [vidSrc, setVidSrc] = useState<string | null>(null)
+    const [videoLength, setVideoLength] = useState<number>(0)
 
     useEffect(()=> {
         load()
     }, [])
 
     useEffect(()=> {
-        if(uploadedVid) {
+        if(uploadedVidFile) {
             loadVideoIntoPreview()
+            
         }
-    }, [uploadedVid])
+        
+    }, [uploadedVidFile])
 
     async function loadVideoIntoPreview() {
-    if (!uploadedVid) return;
-    const videoURL = URL.createObjectURL(uploadedVid);
-    if (videoRef.current) {
-        videoRef.current.src = videoURL;
-        setVidSrc(videoURL);
-        console.log("Video Loaded", videoURL);
-    } else {
-        console.error("Video not loaded")
+        if (!uploadedVidFile) return;
+        const videoURL = URL.createObjectURL(uploadedVidFile);
+        if (videoRef.current) {
+            videoRef.current.src = videoURL;
+            videoRef.current
+            setVidSrc(videoURL);
+            console.log("Video Loaded", videoURL);
+        } else {
+            console.error("Video not loaded")
+        }
     }
-}
 
 
     function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
         if(e.target.files) {
-          setUploadedVid(e.target.files[0])
-          if(!uploadedVid) return
+          setUploadedVidFile(e.target.files[0])
+          if(!uploadedVidFile) return
           console.log("Video Uploaded")
         }
       }
+
+    function handleSlider(e: ChangeEvent<HTMLInputElement>){
+        // const ms = Number(e.target.value);
+        // const time = msToTime(ms);
+        console.log(e.target.value)
+    }
+
+    function handleLoadedMetadata(){
+        if(videoRef.current){
+            setVideoLength(videoRef.current?.duration)
+        }
+    }
 
     const load = async () => {
         const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
@@ -65,7 +82,7 @@ export default function WebAsem() {
     const trimVideo = async () => {
         const ffmpeg = ffmpegRef.current;
         if (!ffmpeg) return;
-        const video = uploadedVid;
+        const video = uploadedVidFile;
         if(!video) return;
         const arrayBuffer = await video.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
@@ -89,9 +106,14 @@ export default function WebAsem() {
     return loaded ? (
         <main className='flex flex-col justify-evenly h-1/2 items-center'>
             {/* <Slider/> */}
-            <input defaultValue={0} min={0} max={100} className='w-full' type="range" name="" id="" />
-            <video className='w-full' ref={videoRef} controls></video>
-            {/* {vidSrc ? <ReactPlayer url={vidSrc} controls={true}/> : null} */}
+            <input onChange={handleSlider} defaultValue={0} min={0} max={videoLength} className='w-1/4' type="range" name="" id=""/>
+            <video 
+            className='w-full hidden' 
+            ref={videoRef} 
+            controls
+            onLoadedMetadata={handleLoadedMetadata}
+            ></video>
+            {vidSrc ? <ReactPlayer url={vidSrc} controls={true}/> : null}
             <section>
                 <label htmlFor="startTime">Start Time</label>
                 <input ref={startRef} type="time" id='startTime' step="00.01"/>
@@ -102,7 +124,7 @@ export default function WebAsem() {
               <label className="rounded-xl px-2 py-2 cursor-pointer" htmlFor="UploadClip">Select Clip</label>
               <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" name="uploadClip" id="UploadClip"/>
             </section>
-            {uploadedVid ? <button className='rounded-xl px-2 py-2 cursor-pointer' onClick={trimVideo}>Trim Video</button> : null}
+            {uploadedVidFile ? <button className='rounded-xl px-2 py-2 cursor-pointer' onClick={trimVideo}>Trim Video</button> : null}
             <p ref={messageRef}></p>
         </main>
     ) : (

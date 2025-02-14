@@ -23,6 +23,8 @@ button {
 
 label {
   padding: 4px 8px;
+  background-color: var(--color-lightred);
+  margin: 1em 0;
 }
 
 input {
