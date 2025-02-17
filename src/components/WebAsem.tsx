@@ -50,15 +50,28 @@ export default function WebAsem() {
       }
 
     function handleSlider(e: ChangeEvent<HTMLInputElement>){
-        // const ms = Number(e.target.value);
-        // const time = msToTime(ms);
-        console.log(e.target.value)
+        const ms = Number(e.target.value);
+        const time = msToTime(ms);
+        console.log(time)
     }
 
     function handleLoadedMetadata(){
         if(videoRef.current){
             setVideoLength(videoRef.current?.duration)
         }
+    }
+
+    function msToTime(duration : number) {
+        let milliseconds = Math.floor((duration % 1000) / 100);
+        let seconds = Math.floor((duration / 1000) % 60);
+        let minutes = Math.floor((duration / (1000 * 60)) % 60);
+        let hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+        hours = (hours < 10) ? 0 + hours : hours;
+        minutes = (minutes < 10) ? 0 + minutes : minutes;
+        seconds = (seconds < 10) ? 0 + seconds : seconds;
+
+        return hours + ":" + minutes + ":" + seconds + "." + milliseconds;
     }
 
     const load = async () => {
@@ -106,7 +119,7 @@ export default function WebAsem() {
     return loaded ? (
         <main className='flex flex-col justify-evenly h-1/2 items-center'>
             {/* <Slider/> */}
-            <input onChange={handleSlider} defaultValue={0} min={0} max={videoLength} className='w-1/4' type="range" name="" id=""/>
+            <input onChange={handleSlider} defaultValue={0} min={0} max={videoLength*1000} className='w-1/4' type="range" name="" id=""/>
             <video 
             className='w-full hidden' 
             ref={videoRef} 
