@@ -29,8 +29,6 @@ function setVideoTimeStampFunction(
 }
 
 export default function Slider({ videoLength, setTimestamps }: SliderProps) {
-  // const startRef = useRef<HTMLInputElement | null>(null);
-  // const endRef = useRef<HTMLInputElement | null>(null);
   const [values, setValues] = useState([0,100])
 
   const handleThumbDragStart = (index : number) => {
@@ -66,10 +64,6 @@ export default function Slider({ videoLength, setTimestamps }: SliderProps) {
 
   return (
     <div className="w-full justify-center flex flex-col items-center">
-      <RangeSlider 
-      className='py-5 my-3' 
-      min={0} 
-      max={videoLength * 1000}/>
 
       {/* <input
         ref={startRef}
