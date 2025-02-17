@@ -6,7 +6,6 @@ function App() {
 
   return (
     <main className='bg-darkblue flex w-screen h-screen items-center justify-center'>
-      {/* <FileUpload/> */}
       <WebAsem/>
     </main>
   )
