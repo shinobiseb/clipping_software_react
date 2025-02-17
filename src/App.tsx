@@ -1,4 +1,3 @@
-import FileUpload from './components/FileUpload'
 import "../src/index.css"
 import WebAsem from './components/WebAsem'
 

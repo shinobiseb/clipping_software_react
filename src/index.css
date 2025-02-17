@@ -22,5 +22,12 @@ button {
 }
 
 label {
+  padding: 4px 8px;
   background-color: var(--color-lightred);
+  margin: 1em 0;
+}
+
+input {
+  background-color: #817F82;
+  margin: 0 1em;
 }
