@@ -14,23 +14,6 @@ type SliderProps = {
 
 export default function Slider({ videoLength, setTimestamps }: SliderProps) {
 
-  function setVideoTimeStampFunction(
-    timeId: 'startTime' | 'endTime',
-    time: string,
-    setFun: React.Dispatch<
-      React.SetStateAction<{
-        startTime: string;
-        endTime: string;
-      }>
-    >
-  ) {
-    setFun((prev) => ({
-      ...prev,
-      [timeId]: time,
-    }));
-  }
-
-
   function handleRange(value: [number, number]) {
     let start = msToTime(value[0]);
     let end = msToTime(value[1]);
@@ -62,40 +45,6 @@ export default function Slider({ videoLength, setTimestamps }: SliderProps) {
         step={1}
         className='py-5 my-2'
       />
-      {/* <MultiRangeSlider
-        label='false'
-        ruler='false'
-        canMinMaxValueSame={false}
-        min={0}
-        max={videoLength*1000}
-        step={1}
-        onInput={handleRange}
-        className='w-full border-0'
-        barLeftColor='white'
-        barRightColor='white'
-        barInnerColor='green'
-        id='Slider'
-      /> */}
-      {/* <input
-        ref={startRef}
-        onChange={handleSlider}
-        defaultValue={0}
-        min={0}
-        max={videoLength * 1000}
-        className="w-full"
-        type="range"
-        id="startSlider"
-      />
-      <input
-        ref={endRef}
-        onChange={handleSlider}
-        defaultValue={0}
-        min={0}
-        max={videoLength * 1000}
-        className="w-full"
-        type="range"
-        id="endSlider"
-      /> */}
     </div>
   );
 }
