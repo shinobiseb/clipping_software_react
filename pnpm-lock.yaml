@@ -17,9 +17,6 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.0.4
         version: 4.0.6(vite@6.1.0(jiti@2.4.2)(lightningcss@1.29.1))
-      multi-range-slider-react:
-        specifier: ^2.0.7
-        version: 2.0.7
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -1082,9 +1079,6 @@ packages:
 
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
-
-  multi-range-slider-react@2.0.7:
-    resolution: {integrity: sha512-KRYUkatXxxYceL5ZT8xvetIN+4yTCdWszxRC6Y6Jkua+oRrWVkmBR6v3R03kosYg/QtcETBf2L1Jt+4U66DFbg==}
 
   nanoid@3.3.8:
     resolution: {integrity: sha512-WNLf5Sd8oZxOm+TzppcYk8gVOgP+l58xNy58D0nbUnOxOWRWvlcCV4kUF7ltmI6PsrLl/BgKEyS4mqsGChFN0w==}
@@ -2254,8 +2248,6 @@ snapshots:
       brace-expansion: 2.0.1
 
   ms@2.1.3: {}
-
-  multi-range-slider-react@2.0.7: {}
 
   nanoid@3.3.8: {}
 
