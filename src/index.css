@@ -31,3 +31,12 @@ input {
   background-color: #817F82;
   margin: 0 1em;
 }
+
+#Slider {
+  box-shadow: none;
+  border: none;
+}
+
+.multi-range-slider .thumb .caption {
+  display: none !important;
+}

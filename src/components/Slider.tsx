@@ -1,6 +1,5 @@
 import { ChangeEvent, useRef, useState } from 'react';
-import RangeSlider from 'react-range-slider-input'
-import 'react-range-slider-input/dist/style.css'
+import MultiRangeSlider, { ChangeResult } from 'multi-range-slider-react';
 
 type SliderProps = {
   videoLength: number;
@@ -12,29 +11,24 @@ type SliderProps = {
   >;
 };
 
-function setVideoTimeStampFunction(
-  timeId: 'startTime' | 'endTime',
-  time: string,
-  setFun: React.Dispatch<
-    React.SetStateAction<{
-      startTime: string;
-      endTime: string;
-    }>
-  >
-) {
-  setFun((prev) => ({
-    ...prev,
-    [timeId]: time,
-  }));
-}
-
 export default function Slider({ videoLength, setTimestamps }: SliderProps) {
-  const [values, setValues] = useState([0,100])
 
-  const handleThumbDragStart = (index : number) => {
-    console.log("Dragging thumb index:", index);
-    console.log("Current value of thumb:", values[index]);
-  };
+  function setVideoTimeStampFunction(
+    timeId: 'startTime' | 'endTime',
+    time: string,
+    setFun: React.Dispatch<
+      React.SetStateAction<{
+        startTime: string;
+        endTime: string;
+      }>
+    >
+  ) {
+    setFun((prev) => ({
+      ...prev,
+      [timeId]: time,
+    }));
+  }
+
 
   function handleSlider(e: ChangeEvent<HTMLInputElement>) {
     const ms = Number(e.target.value);
@@ -47,6 +41,19 @@ export default function Slider({ videoLength, setTimestamps }: SliderProps) {
     } else if (e.target.id === 'endSlider') {
       setVideoTimeStampFunction('endTime', time, setTimestamps);
     }
+  }
+
+  function handleRange(e: ChangeResult){
+    let start = msToTime(e.minValue);
+    let end = msToTime(e.maxValue);
+
+    setTimestamps((prev) => {
+      if (prev.startTime === start && prev.endTime === end) {
+        return prev; // Prevents re-render if values haven't changed
+      }
+      return { startTime: start, endTime: end };
+    })
+    console.log(start, end)
   }
 
   function msToTime(duration: number) {
@@ -64,7 +71,20 @@ export default function Slider({ videoLength, setTimestamps }: SliderProps) {
 
   return (
     <div className="w-full justify-center flex flex-col items-center">
-
+      <MultiRangeSlider
+        label='false'
+        ruler='false'
+        canMinMaxValueSame={false}
+        min={0}
+        max={videoLength*1000}
+        step={1}
+        onInput={handleRange}
+        className='w-full border-0'
+        barLeftColor='white'
+        barRightColor='white'
+        barInnerColor='green'
+        id='Slider'
+      />
       {/* <input
         ref={startRef}
         onChange={handleSlider}
