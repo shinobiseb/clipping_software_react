@@ -4,6 +4,7 @@ import 'react-range-slider-input/dist/style.css';
 
 type SliderProps = {
   videoLength: number;
+  setTimeStampSeconds: React.Dispatch<React.SetStateAction<[number, number]>>;
   setTimestamps: React.Dispatch<
     React.SetStateAction<{
       startTime: string;
@@ -12,7 +13,7 @@ type SliderProps = {
   >;
 };
 
-export default function Slider({ videoLength, setTimestamps }: SliderProps) {
+export default function Slider({ videoLength, setTimestamps, setTimeStampSeconds }: SliderProps) {
   const [range, setRange] = useState<[number, number]>([0, videoLength * 1000]);
 
   // Update range when videoLength changes
@@ -21,11 +22,20 @@ export default function Slider({ videoLength, setTimestamps }: SliderProps) {
   }, [videoLength]);
 
   function handleRange(value: [number, number]) {
-    const start = msToTime(value[0]);
-    const end = msToTime(value[1]);
+    let startValue = value[0];
+    let endValue = value[1];
+
+    if(endValue - startValue <= 1000) {
+      console.log(startValue - endValue)
+      endValue = endValue + 1000
+    }
+
+    const start = msToTime(startValue);
+    const end = msToTime(endValue);
 
     setRange(value); // Update state
     setTimestamps({ startTime: start, endTime: end });
+    setTimeStampSeconds([startValue, endValue])
   }
 
   function msToTime(duration: number) {

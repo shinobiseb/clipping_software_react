@@ -13,10 +13,13 @@ export default function WebAsem() {
     startTime: '00:00:00.0',
     endTime: '00:00:00.0',
   });
+  const [timeStampSeconds, setTimeStampSeconds] = useState<[number, number]>([0,0])
   const [uploadedVidFile, setUploadedVidFile] = useState<File | null>(null);
   const [vidSrc, setVidSrc] = useState<string | null>(null);
   const [videoLength, setVideoLength] = useState<number>(0);
+  const reactVideo = document.getElementById("ReactVideoOuterDiv")?.querySelector("video")
 
+  //-------------- USEEFFECTS --------------------//
   useEffect(() => {
     load();
   }, []);
@@ -26,6 +29,17 @@ export default function WebAsem() {
       loadVideoIntoPreview();
     }
   }, [uploadedVidFile]);
+
+  useEffect(()=> {
+    seekPlayhead()
+  }, [timestamps])
+
+  // ------------------------------------------ //
+  function seekPlayhead(){
+    if(!reactVideo) return;
+    console.log(timeStampSeconds[0])
+    reactVideo.currentTime = timeStampSeconds[0]/1000;
+  }
 
   async function loadVideoIntoPreview() {
     if (!uploadedVidFile) return;
@@ -47,9 +61,9 @@ export default function WebAsem() {
   }
 
   function handleLoadedMetadata() {
-    if (videoRef.current) {
-      setVideoLength(videoRef.current.duration);
-    }
+    if (!videoRef.current) return
+    setVideoLength(videoRef.current.duration);
+    console.log("Video Length: ", videoLength)
   }
 
   const load = async () => {
@@ -92,7 +106,7 @@ export default function WebAsem() {
     const data = await ffmpeg.readFile('output.mp4');
     if (videoRef.current) {
       let videoURL = URL.createObjectURL(new Blob([data], { type: 'video/mp4' }));
-      videoRef.current.src = videoURL;
+      // videoRef.current.src = videoURL;
       setVidSrc(videoURL);
       console.log('Video Loaded', vidSrc);
     }
@@ -102,8 +116,8 @@ export default function WebAsem() {
     <main className="flex flex-col justify-evenly h-1/2 items-center">
       {vidSrc ? 
       <section>
-        <ReactPlayer url={vidSrc} controls={true} />
-        <Slider setTimestamps={setTimestamps} videoLength={videoLength} />
+        <ReactPlayer id="ReactVideoOuterDiv" url={vidSrc} controls={true} />
+        <Slider setTimeStampSeconds={setTimeStampSeconds} setTimestamps={setTimestamps} videoLength={videoLength} />
       </section> : null}
       
       <video className="w-full hidden" ref={videoRef} controls onLoadedMetadata={handleLoadedMetadata}></video>
