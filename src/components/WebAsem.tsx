@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, ChangeEvent, act } from 'react';
+import { useRef, useState, useEffect, ChangeEvent } from 'react';
 import { toBlobURL } from '@ffmpeg/util';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import Slider from './Slider';
@@ -18,7 +18,7 @@ export default function WebAsem() {
   const [vidSrc, setVidSrc] = useState<string | null>(null);
   const [videoLength, setVideoLength] = useState<number>(0);
   const reactVideo = document.getElementById("ReactVideoOuterDiv")?.querySelector("video")
-  const [activeThumb, setActiveThumb] = useState< "start" | "end">("start")
+  const [activeThumb, setActiveThumb] = useState< "start" | "end" | "none">("start")
 
   //-------------- USEEFFECTS --------------------//
   useEffect(() => {
@@ -39,18 +39,27 @@ export default function WebAsem() {
 
   // ------------------------------------------ //
 
+
+  //set only to play when mouseup
   function seekPlayhead() {
     if (!reactVideo) return;
     
     if (activeThumb === "start") {
       reactVideo.currentTime = timeStampSeconds[0] / 1000;
     } else {
-      reactVideo.currentTime = timeStampSeconds[1] / 1000;
+      console.log(reactVideo.currentTime, (timeStampSeconds[1]/1000) - 3 )
+      reactVideo.currentTime = ((timeStampSeconds[1] / 1000) - 3);
     }
   
-    reactVideo.pause(); // Temporarily pause to ensure seeking takes effect
-    reactVideo.play();  // Resume playback
+    reactVideo.pause();
+    reactVideo.play();
   }
+
+  //Check if currentTime === endingClip time
+  //If it is pause video
+  //Then play from beginning
+
+  //Third thumb for playhead's current position then remove the controls in the video element?
 
   async function loadVideoIntoPreview() {
     if (!uploadedVidFile) return;
@@ -115,12 +124,14 @@ export default function WebAsem() {
 
     await ffmpeg.exec(command);
     const data = await ffmpeg.readFile('output.mp4');
-    if (videoRef.current) {
+    if (!videoRef.current) {
+      console.log("No videoRef: ", videoRef.current)
+      return
+    }
       let videoURL = URL.createObjectURL(new Blob([data], { type: 'video/mp4' }));
       // videoRef.current.src = videoURL;
       setVidSrc(videoURL);
       console.log('Video Loaded', vidSrc);
-    }
   };
 
   return loaded ? (

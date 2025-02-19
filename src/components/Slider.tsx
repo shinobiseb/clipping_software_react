@@ -12,36 +12,37 @@ type SliderProps = {
     }>
   >;
   timestamps: [number, number];
-  setThumbs: React.Dispatch<React.SetStateAction<"start" | "end">>
+  setThumbs: React.Dispatch<React.SetStateAction<"start" | "end" | "none">>
 };
 
-export default function Slider({ setThumbs, timestamps, videoLength, setTimestamps, setTimeStampSeconds }: SliderProps) {
+export default function Slider({ setThumbs, videoLength, setTimestamps, setTimeStampSeconds }: SliderProps) {
   const [range, setRange] = useState<[number, number]>([0, videoLength * 1000]);
-  
 
   useEffect(() => {
     const thumbs = document.querySelectorAll(".range-slider__thumb");
+
     
     if (thumbs.length >= 2) {
       thumbs[0].id = "startThumb";
       thumbs[1].id = "endThumb"; 
 
-      // Attach event listeners
       const startThumb = document.getElementById("startThumb");
       const endThumb = document.getElementById("endThumb");
 
-      if (startThumb) {
-        startThumb.addEventListener("click", ()=>setThumbs("start"));
-      }
+      if (startThumb) startThumb.addEventListener("mousedown", ()=>setThumbs("start"));
+      if (startThumb) startThumb.addEventListener("mouseup", ()=>setThumbs("start"));
+      if (endThumb) endThumb.addEventListener("mousedown", ()=> setThumbs("end"));
+      if (endThumb) endThumb.addEventListener("mouseup", ()=> setThumbs("end"));
 
-      if (endThumb) {
-        endThumb.addEventListener("click", ()=> setThumbs("end"));
-      }
-
-      // Cleanup function to remove event listeners on unmount
       return () => {
-        if (startThumb) startThumb.removeEventListener("click", ()=>setThumbs("start"));
-        if (endThumb) endThumb.removeEventListener("click", ()=> setThumbs("end"));
+        if (startThumb) {
+          startThumb.removeEventListener("mouseup", ()=>setThumbs("start"));
+          startThumb.removeEventListener("mousedown", ()=>setThumbs("start"));
+        }
+        if (endThumb){
+          endThumb.removeEventListener("mousedown", ()=> setThumbs("end"));
+          endThumb.removeEventListener("mouseup", ()=> setThumbs("end"));
+        } 
       };
     }
   }, []);
