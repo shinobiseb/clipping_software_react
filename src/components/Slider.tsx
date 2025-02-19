@@ -11,10 +11,40 @@ type SliderProps = {
       endTime: string;
     }>
   >;
+  timestamps: [number, number];
+  setThumbs: React.Dispatch<React.SetStateAction<"start" | "end">>
 };
 
-export default function Slider({ videoLength, setTimestamps, setTimeStampSeconds }: SliderProps) {
+export default function Slider({ setThumbs, timestamps, videoLength, setTimestamps, setTimeStampSeconds }: SliderProps) {
   const [range, setRange] = useState<[number, number]>([0, videoLength * 1000]);
+  
+
+  useEffect(() => {
+    const thumbs = document.querySelectorAll(".range-slider__thumb");
+    
+    if (thumbs.length >= 2) {
+      thumbs[0].id = "startThumb";
+      thumbs[1].id = "endThumb"; 
+
+      // Attach event listeners
+      const startThumb = document.getElementById("startThumb");
+      const endThumb = document.getElementById("endThumb");
+
+      if (startThumb) {
+        startThumb.addEventListener("click", ()=>setThumbs("start"));
+      }
+
+      if (endThumb) {
+        endThumb.addEventListener("click", ()=> setThumbs("end"));
+      }
+
+      // Cleanup function to remove event listeners on unmount
+      return () => {
+        if (startThumb) startThumb.removeEventListener("click", ()=>setThumbs("start"));
+        if (endThumb) endThumb.removeEventListener("click", ()=> setThumbs("end"));
+      };
+    }
+  }, []);
 
   // Update range when videoLength changes
   useEffect(() => {
@@ -53,6 +83,7 @@ export default function Slider({ videoLength, setTimestamps, setTimeStampSeconds
         min={0}
         max={videoLength * 1000}
         onInput={handleRange}
+        onRangeDragEnd={()=>handleRange}
         value={range}
         step={1}
         className="py-5 my-2"

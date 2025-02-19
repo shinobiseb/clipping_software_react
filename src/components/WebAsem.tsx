@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, ChangeEvent } from 'react';
+import { useRef, useState, useEffect, ChangeEvent, act } from 'react';
 import { toBlobURL } from '@ffmpeg/util';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import Slider from './Slider';
@@ -18,6 +18,7 @@ export default function WebAsem() {
   const [vidSrc, setVidSrc] = useState<string | null>(null);
   const [videoLength, setVideoLength] = useState<number>(0);
   const reactVideo = document.getElementById("ReactVideoOuterDiv")?.querySelector("video")
+  const [activeThumb, setActiveThumb] = useState< "start" | "end">("start")
 
   //-------------- USEEFFECTS --------------------//
   useEffect(() => {
@@ -30,15 +31,25 @@ export default function WebAsem() {
     }
   }, [uploadedVidFile]);
 
-  useEffect(()=> {
-    seekPlayhead()
-  }, [timestamps])
+  useEffect(() => {
+    if (activeThumb) {
+      seekPlayhead();
+    }
+  }, [activeThumb, timeStampSeconds]);
 
   // ------------------------------------------ //
-  function seekPlayhead(){
-    if(!reactVideo) return;
-    reactVideo.play();
-    reactVideo.currentTime = timeStampSeconds[0]/1000;
+
+  function seekPlayhead() {
+    if (!reactVideo) return;
+    
+    if (activeThumb === "start") {
+      reactVideo.currentTime = timeStampSeconds[0] / 1000;
+    } else {
+      reactVideo.currentTime = timeStampSeconds[1] / 1000;
+    }
+  
+    reactVideo.pause(); // Temporarily pause to ensure seeking takes effect
+    reactVideo.play();  // Resume playback
   }
 
   async function loadVideoIntoPreview() {
@@ -117,7 +128,12 @@ export default function WebAsem() {
       {vidSrc ? 
       <section>
         <ReactPlayer id="ReactVideoOuterDiv" url={vidSrc} controls={true} />
-        <Slider setTimeStampSeconds={setTimeStampSeconds} setTimestamps={setTimestamps} videoLength={videoLength} />
+        <Slider 
+        setThumbs={setActiveThumb} 
+        timestamps={timeStampSeconds} 
+        setTimeStampSeconds={setTimeStampSeconds} 
+        setTimestamps={setTimestamps} 
+        videoLength={videoLength}/>
       </section> : null}
       
       <video className="w-full hidden" ref={videoRef} controls onLoadedMetadata={handleLoadedMetadata}></video>
