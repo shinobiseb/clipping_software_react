@@ -37,7 +37,7 @@ export default function WebAsem() {
   // ------------------------------------------ //
   function seekPlayhead(){
     if(!reactVideo) return;
-    console.log(timeStampSeconds[0])
+    reactVideo.play();
     reactVideo.currentTime = timeStampSeconds[0]/1000;
   }
 
