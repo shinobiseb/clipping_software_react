@@ -12,15 +12,15 @@ type SliderProps = {
     }>
   >;
   timestamps: [number, number];
-  setThumbs: React.Dispatch<React.SetStateAction<"start" | "end" | "none">>
+  setThumbs: React.Dispatch<React.SetStateAction<"start" | "end" | "none">>;
+  videoPlayer: HTMLVideoElement | null | undefined;
 };
 
-export default function Slider({ setThumbs, videoLength, setTimestamps, setTimeStampSeconds }: SliderProps) {
+export default function Slider({ videoPlayer,setThumbs, videoLength, setTimestamps, setTimeStampSeconds }: SliderProps) {
   const [range, setRange] = useState<[number, number]>([0, videoLength * 1000]);
 
   useEffect(() => {
     const thumbs = document.querySelectorAll(".range-slider__thumb");
-
     
     if (thumbs.length >= 2) {
       thumbs[0].id = "startThumb";
@@ -29,10 +29,14 @@ export default function Slider({ setThumbs, videoLength, setTimestamps, setTimeS
       const startThumb = document.getElementById("startThumb");
       const endThumb = document.getElementById("endThumb");
 
-      if (startThumb) startThumb.addEventListener("mousedown", ()=>setThumbs("start"));
-      if (startThumb) startThumb.addEventListener("mouseup", ()=>setThumbs("start"));
-      if (endThumb) endThumb.addEventListener("mousedown", ()=> setThumbs("end"));
-      if (endThumb) endThumb.addEventListener("mouseup", ()=> setThumbs("end"));
+      if(startThumb){
+        startThumb.addEventListener("mousedown", ()=>setThumbs("start"));
+        startThumb.addEventListener("mouseup", ()=>setThumbs("start"));
+      }
+      if(endThumb){
+        endThumb.addEventListener("mousedown", ()=> setThumbs("end"));
+        endThumb.addEventListener("mouseup", ()=> setThumbs("end"));
+      }
 
       return () => {
         if (startThumb) {
@@ -51,6 +55,10 @@ export default function Slider({ setThumbs, videoLength, setTimestamps, setTimeS
   useEffect(() => {
     setRange([0, videoLength * 1000]);
   }, [videoLength]);
+
+  function handleThumbs(){
+    
+  }
 
   function handleRange(value: [number, number]) {
     let startValue = value[0];

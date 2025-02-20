@@ -39,20 +39,25 @@ export default function WebAsem() {
 
   // ------------------------------------------ //
 
+  function pauseVideo(){
+    reactVideo?.pause()
+    console.log("Video Paused")
+  }
 
   //set only to play when mouseup
   function seekPlayhead() {
     if (!reactVideo) return;
+
+    const duration = timeStampSeconds[1] - timeStampSeconds[0]
+    console.log(duration)
     
     if (activeThumb === "start") {
       reactVideo.currentTime = timeStampSeconds[0] / 1000;
+      reactVideo.play();
     } else {
-      console.log(reactVideo.currentTime, (timeStampSeconds[1]/1000) - 3 )
-      reactVideo.currentTime = ((timeStampSeconds[1] / 1000) - 3);
+      reactVideo.currentTime = (timeStampSeconds[1]/1000) - 3;
+      reactVideo.play();
     }
-  
-    reactVideo.pause();
-    reactVideo.play();
   }
 
   //Check if currentTime === endingClip time
@@ -140,6 +145,7 @@ export default function WebAsem() {
       <section>
         <ReactPlayer id="ReactVideoOuterDiv" url={vidSrc} controls={true} />
         <Slider 
+        videoPlayer={reactVideo}
         setThumbs={setActiveThumb} 
         timestamps={timeStampSeconds} 
         setTimeStampSeconds={setTimeStampSeconds} 
