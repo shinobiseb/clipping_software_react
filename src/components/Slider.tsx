@@ -56,10 +56,6 @@ export default function Slider({ videoPlayer,setThumbs, videoLength, setTimestam
     setRange([0, videoLength * 1000]);
   }, [videoLength]);
 
-  function handleThumbs(){
-    
-  }
-
   function handleRange(value: [number, number]) {
     let startValue = value[0];
     let endValue = value[1];

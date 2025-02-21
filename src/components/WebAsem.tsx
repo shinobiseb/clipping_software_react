@@ -19,6 +19,7 @@ export default function WebAsem() {
   const [videoLength, setVideoLength] = useState<number>(0);
   const reactVideo = document.getElementById("ReactVideoOuterDiv")?.querySelector("video")
   const [activeThumb, setActiveThumb] = useState< "start" | "end" | "none">("start")
+  const [ isPlaying, setIsPlaying  ] = useState<boolean>(false)
 
   //-------------- USEEFFECTS --------------------//
   useEffect(() => {
@@ -32,24 +33,46 @@ export default function WebAsem() {
   }, [uploadedVidFile]);
 
   useEffect(() => {
+    function handleVideoChange(e: Event){
+      const currentTarget = e.target as HTMLVideoElement | null;
+      if(!currentTarget) return
+      console.log(currentTarget.paused)
+    }
+
+    if (reactVideo) {
+      reactVideo.addEventListener("play", (e: Event)=> handleVideoChange(e))
+      reactVideo.addEventListener("pause", (e: Event)=> handleVideoChange(e))
+    } return ()=> {
+      reactVideo?.removeEventListener("play", (e: Event)=> handleVideoChange(e))
+      reactVideo?.removeEventListener("pause", (e: Event)=> handleVideoChange(e))
+    }
+  }, [reactVideo]);
+
+  useEffect(() => {
     if (activeThumb) {
       seekPlayhead();
     }
   }, [activeThumb, timeStampSeconds]);
 
+  // useEffect(()=> {
+  //   if(!reactVideo?.paused){
+  //     setIsPlaying(true)
+  //   } else {
+  //     setIsPlaying(false)
+  //   }
+  //   console.log(isPlaying)
+  // }, [reactVideo?.play, reactVideo?.pause])
+
   // ------------------------------------------ //
 
-  function pauseVideo(){
-    reactVideo?.pause()
-    console.log("Video Paused")
-  }
+  
 
   //set only to play when mouseup
   function seekPlayhead() {
     if (!reactVideo) return;
 
     const duration = timeStampSeconds[1] - timeStampSeconds[0]
-    console.log(duration)
+    // console.log("Duration: ", duration)
     
     if (activeThumb === "start") {
       reactVideo.currentTime = timeStampSeconds[0] / 1000;
