@@ -20,10 +20,12 @@ export default function WebAsem() {
   const reactVideo = document.getElementById("ReactVideoOuterDiv")?.querySelector("video")
   const [activeThumb, setActiveThumb] = useState< "start" | "end" | "none">("start")
   const [ isPlaying, setIsPlaying  ] = useState<boolean>(false)
+  const [ isMetaDataLoaded, setIsMetaDataLoaded] = useState<boolean>(false)
 
   //-------------- USEEFFECTS --------------------//
   useEffect(() => {
     load();
+    setIsMetaDataLoaded(false)
   }, []);
 
   useEffect(() => {
@@ -33,55 +35,36 @@ export default function WebAsem() {
   }, [uploadedVidFile]);
 
   useEffect(() => {
-    function handleVideoChange(e: Event){
-      const currentTarget = e.target as HTMLVideoElement | null;
-      if(!currentTarget) return
-      console.log(currentTarget.paused)
-    }
+    handleLoadedMetadata()
+  }, [isMetaDataLoaded]);
 
-    if (reactVideo) {
-      reactVideo.addEventListener("play", (e: Event)=> handleVideoChange(e))
-      reactVideo.addEventListener("pause", (e: Event)=> handleVideoChange(e))
-    } return ()=> {
-      reactVideo?.removeEventListener("play", (e: Event)=> handleVideoChange(e))
-      reactVideo?.removeEventListener("pause", (e: Event)=> handleVideoChange(e))
+  useEffect(()=> {
+    if(isPlaying){
+      console.log("Playing")
+    } else {
+      console.log("Paused")
     }
-  }, [reactVideo]);
+  }, [isPlaying])
 
   useEffect(() => {
+    function seekPlayhead() {
+      if (!reactVideo) return;
+      
+      if (activeThumb === "start") {
+        reactVideo.currentTime = timeStampSeconds[0] / 1000;
+        reactVideo.play();
+      } else {
+        reactVideo.currentTime = (timeStampSeconds[1]/1000) - 3;
+        reactVideo.play();
+      }
+    }
+
     if (activeThumb) {
       seekPlayhead();
     }
   }, [activeThumb, timeStampSeconds]);
 
-  // useEffect(()=> {
-  //   if(!reactVideo?.paused){
-  //     setIsPlaying(true)
-  //   } else {
-  //     setIsPlaying(false)
-  //   }
-  //   console.log(isPlaying)
-  // }, [reactVideo?.play, reactVideo?.pause])
-
-  // ------------------------------------------ //
-
-  
-
   //set only to play when mouseup
-  function seekPlayhead() {
-    if (!reactVideo) return;
-
-    const duration = timeStampSeconds[1] - timeStampSeconds[0]
-    // console.log("Duration: ", duration)
-    
-    if (activeThumb === "start") {
-      reactVideo.currentTime = timeStampSeconds[0] / 1000;
-      reactVideo.play();
-    } else {
-      reactVideo.currentTime = (timeStampSeconds[1]/1000) - 3;
-      reactVideo.play();
-    }
-  }
 
   //Check if currentTime === endingClip time
   //If it is pause video
@@ -111,6 +94,7 @@ export default function WebAsem() {
   function handleLoadedMetadata() {
     if (!videoRef.current) return
     setVideoLength(videoRef.current.duration);
+    setIsMetaDataLoaded(true)
     console.log("Video Length: ", videoLength)
   }
 
@@ -128,6 +112,7 @@ export default function WebAsem() {
       coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
       wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
     });
+
     setLoaded(true);
   };
 
@@ -166,17 +151,29 @@ export default function WebAsem() {
     <main className="flex flex-col justify-evenly h-1/2 items-center">
       {vidSrc ? 
       <section>
-        <ReactPlayer id="ReactVideoOuterDiv" url={vidSrc} controls={true} />
+        <ReactPlayer 
+        id="ReactVideoOuterDiv" 
+        playing={false}
+        url={vidSrc} 
+        onPlay={()=> setIsPlaying(true)}
+        onPause={()=> setIsPlaying(false)}
+        controls={true} />
         <Slider 
         videoPlayer={reactVideo}
         setThumbs={setActiveThumb} 
         timestamps={timeStampSeconds} 
         setTimeStampSeconds={setTimeStampSeconds} 
         setTimestamps={setTimestamps} 
-        videoLength={videoLength}/>
+        videoLength={videoLength}
+        />
       </section> : null}
       
-      <video className="w-full hidden" ref={videoRef} controls onLoadedMetadata={handleLoadedMetadata}></video>
+      <video 
+      className="w-full hidden" 
+      ref={videoRef} 
+      controls 
+      onLoadedMetadata={handleLoadedMetadata}>
+      </video>
       <section></section>
       <section className="flex">
         <label className="rounded-xl px-2 py-2 cursor-pointer" htmlFor="UploadClip">
