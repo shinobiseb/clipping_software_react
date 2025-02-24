@@ -18,6 +18,7 @@ export default function WebAsem() {
   const [vidSrc, setVidSrc] = useState<string | null>(null);
   const [videoLength, setVideoLength] = useState<number>(0);
   const reactVideo = document.getElementById("ReactVideoOuterDiv")?.querySelector("video")
+  const reactVideoComponentRef = useRef<ReactPlayer | null>(null)
   const [activeThumb, setActiveThumb] = useState< "start" | "end" | "none">("start")
   const [ isPlaying, setIsPlaying  ] = useState<boolean>(false)
   const [ isMetaDataLoaded, setIsMetaDataLoaded] = useState<boolean>(false)
@@ -142,7 +143,6 @@ export default function WebAsem() {
       return
     }
       let videoURL = URL.createObjectURL(new Blob([data], { type: 'video/mp4' }));
-      // videoRef.current.src = videoURL;
       setVidSrc(videoURL);
       console.log('Video Loaded', vidSrc);
   };
@@ -157,7 +157,9 @@ export default function WebAsem() {
         url={vidSrc} 
         onPlay={()=> setIsPlaying(true)}
         onPause={()=> setIsPlaying(false)}
-        controls={true} />
+        controls={true}
+        ref={reactVideoComponentRef}
+        />
         <Slider 
         videoPlayer={reactVideo}
         setThumbs={setActiveThumb} 
