@@ -18,13 +18,14 @@ export default function WebAsem() {
   const [vidSrc, setVidSrc] = useState<string | null>(null);
   const [videoLength, setVideoLength] = useState<number>(0);
   const reactVideo = document.getElementById("ReactVideoOuterDiv")?.querySelector("video")
-  const [activeThumb, setActiveThumb] = useState< "start" | "end" | "none">("start")
+  const [activeThumb, setThumbs] = useState< "start" | "end" | "none">("start")
   const [ isPlaying, setIsPlaying  ] = useState<boolean>(false)
+  const [ isMouseUp, setIsMouseUp  ] = useState<boolean>(false)
   const [ isMetaDataLoaded, setIsMetaDataLoaded] = useState<boolean>(false)
 
   //-------------- USEEFFECTS --------------------//
   useEffect(() => {
-    load();
+    loadFFMPEG();
     setIsMetaDataLoaded(false)
   }, []);
 
@@ -39,23 +40,22 @@ export default function WebAsem() {
   }, [isMetaDataLoaded]);
 
   useEffect(()=> {
-    if(isPlaying){
-      console.log("Playing")
+    if(!reactVideo) return;
+    clearTimeout(timeoutID)
+    if(!isMouseUp){
+      reactVideo.pause()
     } else {
-      console.log("Paused")
+      playUntilEnd()
     }
-  }, [isPlaying])
+  }, [isMouseUp])
 
   useEffect(() => {
     function seekPlayhead() {
       if (!reactVideo) return;
-      
       if (activeThumb === "start") {
         reactVideo.currentTime = timeStampSeconds[0] / 1000;
-        reactVideo.play();
       } else {
         reactVideo.currentTime = (timeStampSeconds[1]/1000) - 3;
-        reactVideo.play();
       }
     }
 
@@ -64,13 +64,30 @@ export default function WebAsem() {
     }
   }, [activeThumb, timeStampSeconds]);
 
-  //set only to play when mouseup
+  let timeoutID : ReturnType<typeof setTimeout> | undefined;
 
-  //Check if currentTime === endingClip time
-  //If it is pause video
-  //Then play from beginning
+  function playUntilEnd(){
+    if(!reactVideo) return;
+    if(activeThumb == "start") {
+      reactVideo.play()
+    } else {
+      reactVideo.play()
+    }
+  }
 
-  //Third thumb for playhead's current position then remove the controls in the video element?
+  function stopAtEnd( seconds : number){
+    if(!reactVideo) return
+    if(seconds >= timeStampSeconds[1]/1000){
+      reactVideo.pause()
+    } else {
+      console.log(seconds, timeStampSeconds[1]/1000)
+    }
+  }
+  
+  function setThumbsAndMouse(thumb :  "start" | "end", isMouseUp: boolean){
+    setThumbs(thumb)
+    setIsMouseUp(isMouseUp)
+  }
 
   async function loadVideoIntoPreview() {
     if (!uploadedVidFile) return;
@@ -98,7 +115,7 @@ export default function WebAsem() {
     console.log("Video Length: ", videoLength)
   }
 
-  const load = async () => {
+  const loadFFMPEG = async () => {
     const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
     const ffmpeg = new FFmpeg();
     ffmpegRef.current = ffmpeg;
@@ -155,12 +172,13 @@ export default function WebAsem() {
         id="ReactVideoOuterDiv" 
         playing={false}
         url={vidSrc} 
+        onProgress={(state)=> stopAtEnd(state.playedSeconds)}
         onPlay={()=> setIsPlaying(true)}
         onPause={()=> setIsPlaying(false)}
         controls={true} />
         <Slider 
         videoPlayer={reactVideo}
-        setThumbs={setActiveThumb} 
+        setThumbsAndMouse={setThumbsAndMouse} 
         timestamps={timeStampSeconds} 
         setTimeStampSeconds={setTimeStampSeconds} 
         setTimestamps={setTimestamps} 

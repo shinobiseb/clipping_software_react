@@ -12,11 +12,11 @@ type SliderProps = {
     }>
   >;
   timestamps: [number, number];
-  setThumbs: React.Dispatch<React.SetStateAction<"start" | "end" | "none">>;
+  setThumbsAndMouse: (thumb: "start" | "end", isMouseUp: boolean) => void;
   videoPlayer: HTMLVideoElement | null | undefined;
 };
 
-export default function Slider({ videoPlayer,setThumbs, videoLength, setTimestamps, setTimeStampSeconds }: SliderProps) {
+export default function Slider({ videoPlayer,setThumbsAndMouse, videoLength, setTimestamps, setTimeStampSeconds }: SliderProps) {
   const [range, setRange] = useState<[number, number]>([0, videoLength * 1000]);
 
   useEffect(() => {
@@ -30,22 +30,22 @@ export default function Slider({ videoPlayer,setThumbs, videoLength, setTimestam
       const endThumb = document.getElementById("endThumb");
 
       if(startThumb){
-        startThumb.addEventListener("mousedown", ()=>setThumbs("start"));
-        startThumb.addEventListener("mouseup", ()=>setThumbs("start"));
+        startThumb.addEventListener("mousedown", ()=>setThumbsAndMouse("start", false));
+        startThumb.addEventListener("mouseup", ()=>setThumbsAndMouse("start", true));
       }
       if(endThumb){
-        endThumb.addEventListener("mousedown", ()=> setThumbs("end"));
-        endThumb.addEventListener("mouseup", ()=> setThumbs("end"));
+        endThumb.addEventListener("mousedown", ()=> setThumbsAndMouse("end", false));
+        endThumb.addEventListener("mouseup", ()=> setThumbsAndMouse("end", true));
       }
 
       return () => {
         if (startThumb) {
-          startThumb.removeEventListener("mouseup", ()=>setThumbs("start"));
-          startThumb.removeEventListener("mousedown", ()=>setThumbs("start"));
+          startThumb.removeEventListener("mouseup", ()=>setThumbsAndMouse("start", true));
+          startThumb.removeEventListener("mousedown", ()=>setThumbsAndMouse("start", false));
         }
         if (endThumb){
-          endThumb.removeEventListener("mousedown", ()=> setThumbs("end"));
-          endThumb.removeEventListener("mouseup", ()=> setThumbs("end"));
+          endThumb.removeEventListener("mousedown", ()=> setThumbsAndMouse("end", false));
+          endThumb.removeEventListener("mouseup", ()=> setThumbsAndMouse("end", true));
         } 
       };
     }
@@ -61,7 +61,7 @@ export default function Slider({ videoPlayer,setThumbs, videoLength, setTimestam
     let endValue = value[1];
 
     if(endValue - startValue <= 1000) {
-      console.log(startValue - endValue)
+      // console.log(startValue - endValue)
       endValue = endValue + 1000
     }
 
