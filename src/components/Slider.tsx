@@ -16,7 +16,7 @@ type SliderProps = {
   videoPlayer: HTMLVideoElement | null | undefined;
 };
 
-export default function Slider({ videoPlayer,setThumbsAndMouse, videoLength, setTimestamps, setTimeStampSeconds }: SliderProps) {
+export default function Slider({ setThumbsAndMouse, videoLength, setTimestamps, setTimeStampSeconds }: SliderProps) {
   const [range, setRange] = useState<[number, number]>([0, videoLength * 1000]);
 
   useEffect(() => {
