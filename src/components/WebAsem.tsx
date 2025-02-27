@@ -192,16 +192,17 @@ export default function WebAsem() {
       controls 
       onLoadedMetadata={handleLoadedMetadata}>
       </video>
-      <section></section>
       <section className="flex">
         <label className="rounded-xl px-2 py-2 cursor-pointer" htmlFor="UploadClip">
           Select Clip
         </label>
         <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
       </section>
-      {uploadedVidFile ? <div>
+      {uploadedVidFile ? 
+      <div className='flex flex-col'>
+        <span>Video Length: <span className='text-green-500'>{Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000)}</span> seconds</span>
         <button className="rounded-xl px-2 py-2 cursor-pointer" onClick={trimVideo}>Trim Video</button> 
-        <a className='rounded-xl px-2 py-2 cursor-pointer' href={vidSrc ? vidSrc : undefined} download>Download</a>
+        <a className='rounded-xl px-2 py-2 cursor-pointer button' href={vidSrc ? vidSrc : undefined} download>Download</a>
       </div> : 
       null}
       <p className='mt-3' ref={messageRef}></p>
