@@ -200,7 +200,7 @@ export default function WebAsem() {
       </section>
       {uploadedVidFile ? 
       <div className='flex flex-col'>
-        <span>Video Length: <span className='text-green-500'>{Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000)}</span> seconds</span>
+        <span>Video Length: <span className='text-green-500'>{Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000+1)}</span> seconds</span>
         <button className="rounded-xl px-2 py-2 cursor-pointer" onClick={trimVideo}>Trim Video</button> 
         <a className='rounded-xl px-2 py-2 cursor-pointer button' href={vidSrc ? vidSrc : undefined} download>Download</a>
       </div> : 
