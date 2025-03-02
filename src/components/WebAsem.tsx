@@ -13,20 +13,17 @@ export default function WebAsem() {
     startTime: '00:00:00.0',
     endTime: '00:00:00.0',
   });
+  const reactVideoComponentRef = useRef(null)
   const [timeStampSeconds, setTimeStampSeconds] = useState<[number, number]>([0,0])
   const [uploadedVidFile, setUploadedVidFile] = useState<File | null>(null);
   const [vidSrc, setVidSrc] = useState<string | null>(null);
   const [videoLength, setVideoLength] = useState<number>(0);
   const reactVideo = document.getElementById("ReactVideoOuterDiv")?.querySelector("video")
-<<<<<<< HEAD
-  const reactVideoComponentRef = useRef<ReactPlayer | null>(null)
-  const [activeThumb, setActiveThumb] = useState< "start" | "end" | "none">("start")
-=======
   const [activeThumb, setThumbs] = useState< "start" | "end" | "none">("start")
->>>>>>> 6689abbb3d8be51749db865d884b4e44d28b825a
   const [ isPlaying, setIsPlaying  ] = useState<boolean>(false)
   const [ isMouseUp, setIsMouseUp  ] = useState<boolean>(false)
   const [ isMetaDataLoaded, setIsMetaDataLoaded] = useState<boolean>(false)
+  const [ isClipTrimmed, setIsClipTrimmed ] = useState(false)
 
   //-------------- USEEFFECTS --------------------//
   useEffect(() => {
@@ -85,7 +82,7 @@ export default function WebAsem() {
     if(seconds >= timeStampSeconds[1]/1000){
       reactVideo.pause()
     } else {
-      console.log(seconds, timeStampSeconds[1]/1000)
+      console.log("Playhead:", seconds, "End Point:", timeStampSeconds[1]/1000)
     }
   }
   
@@ -108,6 +105,7 @@ export default function WebAsem() {
 
   function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
+      setIsClipTrimmed(false)
       setUploadedVidFile(e.target.files[0]);
       console.log('Video Uploaded');
     }
@@ -115,6 +113,7 @@ export default function WebAsem() {
 
   function handleLoadedMetadata() {
     if (!videoRef.current) return
+    if(Number.isNaN(videoRef.current.duration)) console.error("Video Length is NaN")
     setVideoLength(videoRef.current.duration);
     setIsMetaDataLoaded(true)
     console.log("Video Length: ", videoLength)
@@ -126,7 +125,11 @@ export default function WebAsem() {
     ffmpegRef.current = ffmpeg;
     ffmpeg.on('log', ({ message }: { message: string }) => {
       if (!messageRef.current) return;
-      messageRef.current.innerHTML = message;
+      if(message === "Aborted()"){
+        messageRef.current.innerHTML = "Clip Trim Completed!"
+      } else {
+        messageRef.current.innerHTML = message;
+      }
       console.log(message);
     });
 
@@ -165,6 +168,7 @@ export default function WebAsem() {
     }
       let videoURL = URL.createObjectURL(new Blob([data], { type: 'video/mp4' }));
       setVidSrc(videoURL);
+      setIsClipTrimmed(true)
       console.log('Video Loaded', vidSrc);
   };
 
@@ -182,14 +186,18 @@ export default function WebAsem() {
         controls={true}
         ref={reactVideoComponentRef}
         />
-        <Slider 
-        videoPlayer={reactVideo}
-        setThumbsAndMouse={setThumbsAndMouse} 
-        timestamps={timeStampSeconds} 
-        setTimeStampSeconds={setTimeStampSeconds} 
-        setTimestamps={setTimestamps} 
-        videoLength={videoLength}
-        />
+        {
+          isClipTrimmed ? 
+          null : 
+          <Slider 
+          videoPlayer={reactVideo}
+          setThumbsAndMouse={setThumbsAndMouse} 
+          timestamps={timeStampSeconds} 
+          setTimeStampSeconds={setTimeStampSeconds} 
+          setTimestamps={setTimestamps} 
+          videoLength={videoLength}
+          />
+        }
       </section> : null}
       <video 
       className="w-full hidden" 
@@ -197,19 +205,32 @@ export default function WebAsem() {
       controls 
       onLoadedMetadata={handleLoadedMetadata}>
       </video>
-      <section className="flex">
-        <label className="rounded-xl px-2 py-2 cursor-pointer" htmlFor="UploadClip">
-          Select Clip
-        </label>
-        <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
-      </section>
-      {uploadedVidFile ? 
-      <div className='flex flex-col'>
-        <span>Video Length: <span className='text-green-500'>{Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000+1)}</span> seconds</span>
-        <button className="rounded-xl px-2 py-2 cursor-pointer" onClick={trimVideo}>Trim Video</button> 
-        <a className='rounded-xl px-2 py-2 cursor-pointer button' href={vidSrc ? vidSrc : undefined} download>Download</a>
-      </div> : 
-      null}
+      {uploadedVidFile ? // ------------ if Statement ------------
+        <div>
+            { isClipTrimmed ?
+            <div  className='flex flex-col'>
+              <a 
+              className='rounded-xl px-2 py-2 cursor-pointer button' 
+              href={vidSrc ? vidSrc : undefined} 
+              download>Download Clip</a>
+              <label className="rounded-xl px-2 py-2 cursor-pointer" htmlFor="UploadClip">
+                Select Another Clip
+              </label>
+              <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
+            </div> :
+            <div className='flex flex-col'>
+              <span>Video Length: <span className='text-green-500'>{Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000+1)}</span> seconds</span>
+              <button className="rounded-xl px-2 py-2 cursor-pointer" onClick={trimVideo}>Trim Video</button>
+            </div>
+            }
+        </div> : // ------------ Else Statement ------------
+        <div>
+          <label className="button rounded-md cursor-pointer" htmlFor="UploadClip">
+          Select A Clip
+          </label>
+          <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip"/>
+        </div>
+      }
       <p className='mt-3' ref={messageRef}></p>
     </main>
   ) : (

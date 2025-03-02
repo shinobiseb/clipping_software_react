@@ -80,7 +80,6 @@
 	z-index: 2;
 	border-radius: 50%;
 	border: dotted 1px black;
-	box-shadow: 0px 0px 5px white, inset 0px 0px 10px black;
 }
 .multi-range-slider .caption {
 	position: absolute;

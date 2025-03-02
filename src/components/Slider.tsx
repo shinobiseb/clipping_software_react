@@ -60,11 +60,6 @@ export default function Slider({ setThumbsAndMouse, videoLength, setTimestamps, 
     let startValue = value[0];
     let endValue = value[1];
 
-    if(endValue - startValue <= 1000) {
-      // console.log(startValue - endValue)
-      endValue = endValue + 1000
-    }
-
     const start = msToTime(startValue);
     const end = msToTime(endValue);
 
