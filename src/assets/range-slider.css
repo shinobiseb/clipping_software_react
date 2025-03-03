@@ -1,0 +1,32 @@
+/* Ensure you override the correct class names */
+:root {
+    --color-orange: #D94100;
+}
+
+.range-slider {
+    height: 6px;
+    background: var(--color-gray); /* Track color */
+    border-radius: 0px;
+    padding: 1.2em 0;
+    margin: 10px;
+}
+  
+.range-slider__thumb {
+  width: 15px !important;
+  height: 100% !important;
+  background: #ffffff !important;
+  border-radius: 0% !important;
+  cursor: pointer;
+}
+
+.range-slider__range {
+  background: var(--color-orange) !important; /* Track fill color */
+}
+
+#endThumb {
+    clip-path: polygon(0 25%, 0 0, 100% 0, 100% 100%, 0 100%, 0 75%, 40% 75%, 40% 25%);
+}
+
+#startThumb {
+    clip-path: polygon(100% 25%, 100% 0, 0 0, 0 100%, 100% 100%, 100% 75%, 60% 75%, 60% 25%);
+}

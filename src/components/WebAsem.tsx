@@ -173,7 +173,7 @@ export default function WebAsem() {
   };
 
   return loaded ? (
-    <main className="flex flex-col justify-evenly h-1/2 items-center">
+    <main className="flex flex-col justify-evenly h-1/2 items-center ">
       {vidSrc ? 
       <section>
         <ReactPlayer 
@@ -218,14 +218,14 @@ export default function WebAsem() {
               </label>
               <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
             </div> :
-            <div className='flex flex-col'>
-              <span>Video Length: <span className='text-green-500'>{Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000+1)}</span> seconds</span>
-              <button className="rounded-xl px-2 py-2 cursor-pointer" onClick={trimVideo}>Trim Video</button>
+            <div className='flex flex-col items-center'>
+              <button className="prim-button mt-1" onClick={trimVideo}>Trim Video</button>
+              <span className='mt-4 text-sm'>Video Length: <span className='loading-message'>{Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000+1)} seconds</span></span>
             </div>
             }
         </div> : // ------------ Else Statement ------------
         <div>
-          <label className="button rounded-md cursor-pointer" htmlFor="UploadClip">
+          <label className="prim-button" htmlFor="UploadClip">
           Select A Clip
           </label>
           <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip"/>

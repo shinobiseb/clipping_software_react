@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import RangeSlider from 'react-range-slider-input';
 import 'react-range-slider-input/dist/style.css';
+import '../assets/range-slider.css'
 
 type SliderProps = {
   videoLength: number;
@@ -86,7 +87,6 @@ export default function Slider({ setThumbsAndMouse, videoLength, setTimestamps, 
         onRangeDragEnd={()=>handleRange}
         value={range}
         step={1}
-        className="py-5 my-2"
       />
     </div>
   );

@@ -1,31 +1,41 @@
 @import "tailwindcss";
-
-html {
-  background-color: #092327;
-  color: white;
-}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 :root {
-  --color-darkblue: #092327;
+  --color-black: #171717;
   --color-lightblue: #06BCC1;
   --color-darkblue: #FFFFFF;
-  --color-orange: #FF7F11;
+  --color-orange: #D94100;
   --color-yellow: #FFE900;
   --color-red: #FF0022;
   --color-lightred: #FE5E41;
-  --color-gray: #817F82;
+  --color-gray: #323232;
+}
+
+html {
+  background-color: var(--color-black);
+  color: white;
+  font-family: "Poppins", serif
 }
 
 button {
-  background-color: var(--color-lightred);
+  background-color: var(--color-orange);
   text-align: center;
 }
 
-label, .button {
-  padding: 4px 8px;
-  background-color: var(--color-lightred);
-  margin: 1em 0;
-  text-align: center;
+.prim-button {
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 0.35rem;
+  width: 85%;
+  box-shadow: 5px 6px black;
+  background-color: var(--color-orange);
+  transition: 250ms;
+}
+
+.prim-button:hover {
+  box-shadow: 3px 3px black;
+  background-color: var(--color-orange);
 }
 
 input {
@@ -36,6 +46,10 @@ input {
 #Slider {
   box-shadow: none;
   border: none;
+}
+
+.loading-message {
+  color: var(--color-orange);
 }
 
 .multi-range-slider .thumb .caption {
