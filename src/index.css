@@ -26,11 +26,25 @@ button {
 .prim-button {
   cursor: pointer;
   border-radius: 6px;
-  padding: 0.35rem;
-  width: 85%;
+  padding: 0.35rem 0.5rem;
+  width: 100%;
   box-shadow: 5px 6px black;
   background-color: var(--color-orange);
   transition: 250ms;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.sec-button {
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 0.35rem 1.4rem;
+  width: 100%;
+  box-shadow: 5px 6px black;
+  background-color: var(--color-yellow);
+  color: black;
+  transition: 250ms;
+  text-align: center;
 }
 
 .prim-button:hover {

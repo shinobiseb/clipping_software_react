@@ -124,13 +124,15 @@ export default function WebAsem() {
     const ffmpeg = new FFmpeg();
     ffmpegRef.current = ffmpeg;
     ffmpeg.on('log', ({ message }: { message: string }) => {
-      if (!messageRef.current) return;
-      if(message === "Aborted()"){
-        messageRef.current.innerHTML = "Clip Trim Completed!"
-      } else {
-        messageRef.current.innerHTML = message;
+      if (messageRef.current) {
+        if (message === "Aborted()") {
+          messageRef.current.innerHTML = "Clip Trim Completed!";
+        } else {
+          messageRef.current.innerHTML = message;
+        }
       }
-      console.log(message);
+      // Log messages to the console as well
+      console.log("FFmpeg log:", message);
     });
 
     await ffmpeg.load({
@@ -158,7 +160,6 @@ export default function WebAsem() {
     }
 
     const command = ['-ss', timestamps.startTime, '-to', timestamps.endTime, '-i', 'input.mp4', '-c', 'copy', 'output.mp4'];
-    console.log(command);
 
     await ffmpeg.exec(command);
     const data = await ffmpeg.readFile('output.mp4');
@@ -209,11 +210,12 @@ export default function WebAsem() {
         <div>
             { isClipTrimmed ?
             <div  className='flex flex-col'>
+              <p className='mt-3 text-center' ref={messageRef}>Trim Clipped!</p>
               <a 
-              className='rounded-xl px-2 py-2 cursor-pointer button' 
+              className='prim-button' 
               href={vidSrc ? vidSrc : undefined} 
               download>Download Clip</a>
-              <label className="rounded-xl px-2 py-2 cursor-pointer" htmlFor="UploadClip">
+              <label className="sec-button" htmlFor="UploadClip">
                 Select Another Clip
               </label>
               <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
@@ -231,7 +233,7 @@ export default function WebAsem() {
           <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip"/>
         </div>
       }
-      <p className='mt-3' ref={messageRef}></p>
+      
     </main>
   ) : (
     <h3>Loading...</h3>
