@@ -42,6 +42,10 @@ export default function WebAsem() {
   }, [isMetaDataLoaded]);
 
   useEffect(()=> {
+    console.log(isPlaying)
+  }, [isPlaying])
+
+  useEffect(()=> {
     if(!reactVideo) return;
     clearTimeout(timeoutID)
     if(!isMouseUp){
@@ -131,7 +135,6 @@ export default function WebAsem() {
           messageRef.current.innerHTML = message;
         }
       }
-      // Log messages to the console as well
       console.log("FFmpeg log:", message);
     });
 
@@ -143,15 +146,21 @@ export default function WebAsem() {
     setLoaded(true);
   };
 
+  const writeInputVideo = async (video:File) => {
+    const ffmpeg = ffmpegRef.current;
+    if(!ffmpeg) return;
+    const arrayBuffer = await video.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    await ffmpeg.writeFile('input.mp4', uint8Array);
+  }
+
   const trimVideo = async () => {
     const ffmpeg = ffmpegRef.current;
     if (!ffmpeg) return;
     const video = uploadedVidFile;
     if (!video) return;
 
-    const arrayBuffer = await video.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
-    await ffmpeg.writeFile('input.mp4', uint8Array);
+    writeInputVideo(video)
 
     if (!timestamps.startTime || !timestamps.endTime) {
       console.error('StartRef or EndRef Not Valid');
@@ -163,14 +172,10 @@ export default function WebAsem() {
 
     await ffmpeg.exec(command);
     const data = await ffmpeg.readFile('output.mp4');
-    if (!videoRef.current) {
-      console.log("No videoRef: ", videoRef.current)
-      return
-    }
-      let videoURL = URL.createObjectURL(new Blob([data], { type: 'video/mp4' }));
-      setVidSrc(videoURL);
-      setIsClipTrimmed(true)
-      console.log('Video Loaded', vidSrc);
+    let videoURL = URL.createObjectURL(new Blob([data], { type: 'video/mp4' }));
+    setVidSrc(videoURL);
+    setIsClipTrimmed(true)
+    console.log("Trimmed Video Loaded: ", vidSrc);
   };
 
   return loaded ? (
@@ -199,7 +204,9 @@ export default function WebAsem() {
           videoLength={videoLength}
           />
         }
-      </section> : null}
+        </section> : 
+        null
+      }
       <video 
       className="w-full hidden" 
       ref={videoRef} 
@@ -222,15 +229,21 @@ export default function WebAsem() {
             </div> :
             <div className='flex flex-col items-center'>
               <button className="prim-button mt-1" onClick={trimVideo}>Trim Video</button>
+              <label className="sec-button" htmlFor="UploadClip">
+                Select Another Clip
+              </label>
+              <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
               <span className='mt-4 text-sm'>Video Length: <span className='loading-message'>{Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000+1)} seconds</span></span>
             </div>
             }
         </div> : // ------------ Else Statement ------------
         <div>
-          <label className="prim-button" htmlFor="UploadClip">
-          Select A Clip
-          </label>
-          <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip"/>
+          <div className='flex flex-col'>
+              <label className="sec-button" htmlFor="UploadClip">
+                Select A Clip
+              </label>
+              <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
+            </div>
         </div>
       }
       
