@@ -39,10 +39,6 @@ export default function WebAsem() {
     }
   }, [uploadedVidFile]);
 
-  useEffect(() => {
-    handleLoadedMetadata()
-  }, [isMetaDataLoaded]);
-
   useEffect(()=> {
     console.log(isPlaying)
   }, [isPlaying])
@@ -203,7 +199,14 @@ export default function WebAsem() {
   // -------------------------------------------- //
 
   return loaded ? (
-    <main className="flex flex-col justify-evenly h-full w-full items-center">
+    <main {...getRootProps()} className="flex flex-col justify-center h-full w-full items-center">
+      {
+                isDragActive ?
+                <section className='flex p-10 border rounded-lg transition-opacity opacity-50 h-full w-full items-center justify-center absolute top-0 right-0 z-10 bg-gray-800 bg-opacity-5'>
+                  <p>Drop Files Here</p>
+                </section> :
+                null
+              }
       {vidSrc ? 
       <section>
         <ReactPlayer 
@@ -237,9 +240,11 @@ export default function WebAsem() {
       controls 
       onLoadedMetadata={handleLoadedMetadata}>
       </video>
-      {uploadedVidFile ? // ------------ if Statement ------------
-        <div>
-            { isClipTrimmed ?
+      {
+        uploadedVidFile ? // ------------ if Statement ------------
+        <div  className='flex w-full items-start justify-center'>
+          { 
+            isClipTrimmed ?
             <div  className='flex flex-col'>
               <p className='mt-3 text-center' ref={messageRef}>Trim Clipped!</p>
               <a 
@@ -252,27 +257,26 @@ export default function WebAsem() {
               <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
             </div> :
             <div className='flex flex-col items-center'>
+              
               <button className="prim-button mt-1" onClick={trimVideo}>Trim Video</button>
               <label className="sec-button" htmlFor="UploadClip">
                 Select Another Clip
               </label>
               <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
-              <span className='mt-4 text-sm'>Video Length: <span className='loading-message'>{Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000+1)} seconds</span></span>
+              <span className='mt-4 text-sm'>Video Length: <span className='loading-message'>{Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000)} seconds</span></span>
             </div>
-            }
+          }
         </div> : // ------------ Else Statement ------------
-          <div {...getRootProps()} className='flex flex-col h-full w-full items-center justify-center'>
+          <div className='flex flex-col h-full w-full items-center justify-center'>
               {
                 isDragActive ?
-                  <section className='flex p-10 border-gray-800 border rounded-lg transition-opacity h-3/4 w-3/4 items-center justify-center'>
-                    <p>Drop Files Here</p>
-                  </section> :
+                  null :
                   <section>
                     <label className="sec-button" htmlFor="UploadClip">
                     Select A Clip
                     </label>
                     <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
-                    <input {...getInputProps()} />
+                    <input {...getInputProps()}/>
                   </section>
               }
           </div>
