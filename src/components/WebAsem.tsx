@@ -68,6 +68,10 @@ export default function WebAsem() {
     }
   }, [activeThumb, timeStampSeconds]);
 
+  useEffect(()=> {
+    console.log("MetaData Loaded?", isMetaDataLoaded)
+  }, [isMetaDataLoaded])
+
   let timeoutID : ReturnType<typeof setTimeout> | undefined;
 
   // --------- Functions --------- //
