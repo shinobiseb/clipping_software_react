@@ -3,6 +3,8 @@ import { toBlobURL } from '@ffmpeg/util';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import Slider from './Slider';
 import ReactPlayer from 'react-player';
+import { useDropzone } from 'react-dropzone'
+import { useCallback } from 'react';
 
 export default function WebAsem() {
   const [loaded, setLoaded] = useState<boolean>(false);
@@ -72,6 +74,8 @@ export default function WebAsem() {
 
   let timeoutID : ReturnType<typeof setTimeout> | undefined;
 
+  // --------- Functions --------- //
+
   function playUntilEnd(){
     if(!reactVideo) return;
     if(activeThumb == "start") {
@@ -80,6 +84,15 @@ export default function WebAsem() {
       reactVideo.play()
     }
   }
+
+  //Handle Dropped Files
+  const onDrop = useCallback((acceptedFiles : Array<File>) => {
+    handleFile(acceptedFiles)
+  }, [])
+  const {getRootProps, getInputProps, isDragActive} = useDropzone({
+    onDrop,
+
+  })
 
   function stopAtEnd( seconds : number){
     if(!reactVideo) return
@@ -109,9 +122,16 @@ export default function WebAsem() {
 
   function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
+      handleFile(e.target.files)
+    }
+  }
+
+  function handleFile( files : FileList | File[]){
+  const fileArray = files instanceof FileList ? Array.from(files) : files;
+    if (fileArray.length > 0) {
+      setUploadedVidFile(fileArray[0]);
       setIsClipTrimmed(false)
-      setUploadedVidFile(e.target.files[0]);
-      console.log('Video Uploaded');
+      console.log('Video Loaded for Clipping');
     }
   }
 
@@ -178,8 +198,12 @@ export default function WebAsem() {
     console.log("Trimmed Video Loaded: ", vidSrc);
   };
 
+  // -------------------------------------------- //
+  // ---------------- Return -------------------- //
+  // -------------------------------------------- //
+
   return loaded ? (
-    <main className="flex flex-col justify-evenly h-1/2 items-center ">
+    <main className="flex flex-col justify-evenly h-full w-full items-center">
       {vidSrc ? 
       <section>
         <ReactPlayer 
@@ -237,14 +261,21 @@ export default function WebAsem() {
             </div>
             }
         </div> : // ------------ Else Statement ------------
-        <div>
-          <div className='flex flex-col'>
-              <label className="sec-button" htmlFor="UploadClip">
-                Select A Clip
-              </label>
-              <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
-            </div>
-        </div>
+          <div {...getRootProps()} className='flex flex-col h-full w-full items-center justify-center'>
+              {
+                isDragActive ?
+                  <section className='flex p-10 border-gray-800 border rounded-lg transition-opacity h-3/4 w-3/4 items-center justify-center'>
+                    <p>Drop Files Here</p>
+                  </section> :
+                  <section>
+                    <label className="sec-button" htmlFor="UploadClip">
+                    Select A Clip
+                    </label>
+                    <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
+                    <input {...getInputProps()} />
+                  </section>
+              }
+          </div>
       }
       
     </main>
