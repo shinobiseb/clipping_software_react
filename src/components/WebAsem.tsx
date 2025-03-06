@@ -180,7 +180,7 @@ export default function WebAsem() {
     const video = uploadedVidFile;
     if (!video) return;
 
-    writeInputVideo(video)
+    await writeInputVideo(video)
 
     if (!timestamps.startTime || !timestamps.endTime) {
       console.error('StartRef or EndRef Not Valid');
