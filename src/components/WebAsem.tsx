@@ -27,7 +27,10 @@ export default function WebAsem() {
   const [ isMetaDataLoaded, setIsMetaDataLoaded] = useState<boolean>(false)
   const [ isClipTrimmed, setIsClipTrimmed ] = useState(false)
 
-  //-------------- USEEFFECTS --------------------//
+  //------------------------------------------//
+  //-------------- USEEFFECTS ----------------//
+  //------------------------------------------//
+
   useEffect(() => {
     loadFFMPEG();
     setIsMetaDataLoaded(false)
@@ -40,7 +43,7 @@ export default function WebAsem() {
   }, [uploadedVidFile]);
 
   useEffect(()=> {
-    console.log(isPlaying)
+    console.log("Video Playing? ", isPlaying)
   }, [isPlaying])
 
   useEffect(()=> {
@@ -88,10 +91,13 @@ export default function WebAsem() {
   //Handle Dropped Files
   const onDrop = useCallback((acceptedFiles : Array<File>) => {
     handleFile(acceptedFiles)
-  }, [])
+  }, [handleFile])
   const {getRootProps, getInputProps, isDragActive} = useDropzone({
     onDrop,
-
+    multiple: false,
+    accept: {
+      "video/mp4": []
+    }
   })
 
   function stopAtEnd( seconds : number){
@@ -258,7 +264,7 @@ export default function WebAsem() {
               <label className="sec-button" htmlFor="UploadClip">
                 Select Another Clip
               </label>
-              <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
+              <input onChange={handleFileChange} className="sr-only" accept="video/*" type="file" id="UploadClip" />
             </div> :
             <div className='flex flex-col items-center'>
               
