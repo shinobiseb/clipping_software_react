@@ -44,6 +44,11 @@ button {
   color: black;
   transition: 250ms;
   text-align: center;
+  max-width: 170px;
+}
+
+.success-msg {
+  color: var(--color-yellow);
 }
 
 .prim-button:hover {

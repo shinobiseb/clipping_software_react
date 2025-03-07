@@ -250,7 +250,7 @@ export default function WebAsem() {
           { 
             isClipTrimmed ?
             <div  className='flex flex-col'>
-              <p className='mt-3 text-center' ref={messageRef}>Trim Clipped!</p>
+              <p className='mt-3 text-center success-msg' ref={messageRef}>Trim Clipped!</p>
               <a 
               className='prim-button' 
               href={vidSrc ? vidSrc : undefined} 
@@ -275,13 +275,15 @@ export default function WebAsem() {
               {
                 isDragActive ?
                   null :
-                  <section>
-                    <label className="sec-button" htmlFor="UploadClip">
-                    Select A Clip
-                    </label>
-                    <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
-                    <input {...getInputProps()}/>
-                  </section>
+                  <div className='flex flex-col h-1/3 w-1/2 justify-center'>
+                    <section className='flex items-center justify-center'>
+                      <label className="sec-button" htmlFor="UploadClip">
+                      Select A Clip
+                      </label>
+                      <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
+                      <input {...getInputProps()}/>
+                    </section>
+                  </div>
               }
           </div>
       }
