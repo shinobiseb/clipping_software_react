@@ -106,8 +106,11 @@ export default function Main() {
 
   function stopAtEnd( seconds : number){
     if(!reactVideo) return
+    //Workaround for Video Length
+    if(Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000) === 0) return
     if(seconds >= timeStampSeconds[1]/1000){
       reactVideo.pause()
+      console.log("stopAtEnd Fired")
     } else {
       console.log("Playhead:", seconds, "End Point:", timeStampSeconds[1]/1000)
     }
