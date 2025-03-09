@@ -1,11 +1,11 @@
 import "../src/index.css"
-import WebAsem from './components/WebAsem'
+import Main from './components/Main'
 
 function App() {
 
   return (
     <main className='bg-black text-white flex w-screen h-screen items-center justify-center'>
-      <WebAsem/>
+      <Main/>
     </main>
   )
 }

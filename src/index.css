@@ -58,8 +58,12 @@ button {
 
 .prim-button:hover {
   box-shadow: 3px 3px black;
-  background-color: var(--color-orange);
 }
+
+.sec-button:hover {
+  box-shadow: 3px 3px black;
+}
+
 
 #Slider {
   box-shadow: none;

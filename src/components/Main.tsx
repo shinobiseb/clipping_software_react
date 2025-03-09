@@ -1,15 +1,15 @@
 import { useRef, useState, useEffect, ChangeEvent } from 'react';
 import { toBlobURL } from '@ffmpeg/util';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import Slider from './Slider';
-import ReactPlayer from 'react-player';
 import { useDropzone } from 'react-dropzone'
 import { useCallback } from 'react';
 import Hero from './Hero';
 import DropZone from './DropZone';
 import Editing from './Editing';
+import Success from './Success';
+import Actions from './Actions';
 
-export default function WebAsem() {
+export default function Main() {
   const [loaded, setLoaded] = useState<boolean>(false);
   const ffmpegRef = useRef<FFmpeg | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -136,7 +136,7 @@ export default function WebAsem() {
     }
   }
 
-  function handleFile( files : FileList | File[]){
+  function handleFile( files : FileList | File[]) {
   const fileArray = files instanceof FileList ? Array.from(files) : files;
     if (fileArray.length > 0) {
       setUploadedVidFile(fileArray[0]);
@@ -254,43 +254,28 @@ export default function WebAsem() {
         <div className='flex w-full items-start justify-center'>
           { 
             isClipTrimmed ?
-            <div  className='flex flex-col'>
-              <p className='mt-3 text-center success-msg' ref={messageRef}>Trim Clipped!</p>
-              <a 
-              className='prim-button' 
-              href={vidSrc ? vidSrc : undefined} 
-              download>Download Clip</a>
-              <label className="sec-button" htmlFor="UploadClip">
-                Select Another Clip
-              </label>
-              <input onChange={handleFileChange} className="sr-only" accept="video/*" type="file" id="UploadClip" />
-            </div> :
-            <div className='flex flex-col items-center'>
-              
-              <button className="prim-button mt-1" onClick={trimVideo}>Trim Video</button>
-              <label className="sec-button" htmlFor="UploadClip">
-                Select Another Clip
-              </label>
-              <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
-              <span className='mt-4 text-sm'>Video Length: <span className='loading-message'>{Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000)} seconds</span></span>
-            </div>
+            <Success
+            vidSrc={vidSrc}
+            messageRef={messageRef}
+            handleFileChange={handleFileChange}
+            />
+            :
+            <Actions
+            timeStampSeconds={timeStampSeconds}
+            handleFileChange={handleFileChange}
+            trimVideo={trimVideo}
+            />
           }
         </div> : // ------------ Else Statement ------------
           <div className='flex flex-col h-full w-full items-center justify-center'>
-              {
-                isDragActive ?
-                  null :
-                  <div className='flex flex-col h-full w-full justify-center'>
-                    <section className='flex flex-col items-center justify-center'>
-                      <Hero/>
-                      <label className="sec-button" htmlFor="UploadClip">
-                      Select A Clip
-                      </label>
-                      <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
-                      <input {...getInputProps()}/>
-                    </section>
-                  </div>
-              }
+            {
+              isDragActive ?
+              null :
+              <Hero
+              handleFileChange={handleFileChange}
+              getInputProps={getInputProps}
+              />
+            }
           </div>
       }
       
