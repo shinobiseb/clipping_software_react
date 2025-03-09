@@ -5,6 +5,9 @@ import Slider from './Slider';
 import ReactPlayer from 'react-player';
 import { useDropzone } from 'react-dropzone'
 import { useCallback } from 'react';
+import Hero from './Hero';
+import DropZone from './DropZone';
+import Editing from './Editing';
 
 export default function WebAsem() {
   const [loaded, setLoaded] = useState<boolean>(false);
@@ -97,7 +100,8 @@ export default function WebAsem() {
     multiple: false,
     accept: {
       "video/mp4": []
-    }
+    },
+    noClick: true,
   })
 
   function stopAtEnd( seconds : number){
@@ -208,40 +212,35 @@ export default function WebAsem() {
   // ---------------- Return -------------------- //
   // -------------------------------------------- //
 
+  //Reconfigure to components
+  // - OnDrag Component
+  // - Select Clip Component
+  // - Hero Component
+
+  // Add Framer Motion?
+
   return loaded ? (
     <main {...getRootProps()} className="flex flex-col justify-center h-full w-full items-center">
       {
-                isDragActive ?
-                <section className='flex p-10 border rounded-lg transition-opacity opacity-50 h-full w-full items-center justify-center absolute top-0 right-0 z-10 bg-gray-800 bg-opacity-5'>
-                  <p>Drop Files Here</p>
-                </section> :
-                null
-              }
-      {vidSrc ? 
-      <section>
-        <ReactPlayer 
-        id="ReactVideoOuterDiv" 
-        playing={false}
-        url={vidSrc} 
-        onProgress={(state)=> stopAtEnd(state.playedSeconds)}
-        onPlay={()=> setIsPlaying(true)}
-        onPause={()=> setIsPlaying(false)}
-        controls={true}
-        ref={reactVideoComponentRef}
-        />
-        {
-          isClipTrimmed ? 
-          null : 
-          <Slider 
-          videoPlayer={reactVideo}
-          setThumbsAndMouse={setThumbsAndMouse} 
-          timestamps={timeStampSeconds} 
-          setTimeStampSeconds={setTimeStampSeconds} 
-          setTimestamps={setTimestamps} 
-          videoLength={videoLength}
-          />
-        }
-        </section> : 
+        isDragActive ?
+        <DropZone/> :
+        null
+      }
+      {
+      vidSrc ? 
+      <Editing
+      vidSrc={vidSrc}
+      stopAtEnd={stopAtEnd}
+      setIsPlaying={setIsPlaying}
+      reactVideoComponentRef={reactVideoComponentRef}
+      reactVideo={reactVideo}
+      isClipTrimmed={isClipTrimmed}
+      setThumbsAndMouse={setThumbsAndMouse}
+      timeStampSeconds={timeStampSeconds}
+      videoLength={videoLength}
+      setTimeStamps={setTimestamps}
+      setTimeStampSeconds={setTimeStampSeconds}
+      /> : 
         null
       }
       <video 
@@ -252,7 +251,7 @@ export default function WebAsem() {
       </video>
       {
         uploadedVidFile ? // ------------ if Statement ------------
-        <div  className='flex w-full items-start justify-center'>
+        <div className='flex w-full items-start justify-center'>
           { 
             isClipTrimmed ?
             <div  className='flex flex-col'>
@@ -281,8 +280,9 @@ export default function WebAsem() {
               {
                 isDragActive ?
                   null :
-                  <div className='flex flex-col h-1/3 w-1/2 justify-center'>
-                    <section className='flex items-center justify-center'>
+                  <div className='flex flex-col h-full w-full justify-center'>
+                    <section className='flex flex-col items-center justify-center'>
+                      <Hero/>
                       <label className="sec-button" htmlFor="UploadClip">
                       Select A Clip
                       </label>

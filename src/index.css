@@ -11,9 +11,18 @@
   --color-gray: #323232;
 }
 
+@theme {
+  --color-black: #171717;
+  --color-lightblue: #06BCC1;
+  --color-darkblue: #FFFFFF;
+  --color-orange: #D94100;
+  --color-yellow: #FFE900;
+  --color-red: #FF0022;
+  --color-lightred: #FE5E41;
+  --color-gray: #323232;
+}
+
 html {
-  background-color: var(--color-black);
-  color: white;
   font-family: "Poppins", serif
 }
 
@@ -47,18 +56,9 @@ button {
   max-width: 170px;
 }
 
-.success-msg {
-  color: var(--color-yellow);
-}
-
 .prim-button:hover {
   box-shadow: 3px 3px black;
   background-color: var(--color-orange);
-}
-
-input {
-  background-color: #817F82;
-  margin: 0 1em;
 }
 
 #Slider {

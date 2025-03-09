@@ -4,7 +4,7 @@ import WebAsem from './components/WebAsem'
 function App() {
 
   return (
-    <main className='bg-darkblue flex w-screen h-screen items-center justify-center'>
+    <main className='bg-black text-white flex w-screen h-screen items-center justify-center'>
       <WebAsem/>
     </main>
   )
