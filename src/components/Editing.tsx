@@ -36,7 +36,7 @@ export default function Editing( {
     editingProps ) {
 
   return (
-    <section className='flex flex-col h-full w-full p-5'>
+    <section className='flex flex-col h-full w-full sm:max-w-2xl p-5'>
         <ReactPlayer 
         id="ReactVideoOuterDiv" 
         width={"100%"}
