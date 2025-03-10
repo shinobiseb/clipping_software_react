@@ -36,9 +36,10 @@ export default function Editing( {
     editingProps ) {
 
   return (
-    <section>
+    <section className='flex flex-col h-full w-full p-5'>
         <ReactPlayer 
         id="ReactVideoOuterDiv" 
+        width={"100%"}
         playing={false}
         url={vidSrc} 
         onProgress={(state)=> stopAtEnd(state.playedSeconds)}

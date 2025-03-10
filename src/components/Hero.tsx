@@ -9,8 +9,8 @@ type heroProps = {
 export default function Hero( { handleFileChange, getInputProps } : heroProps ) {
   return (
     <div className='flex flex-col w-full h-full items-center justify-center'>
-        <h1 className='text-9xl font-bold '><span className='text-orange'>SP</span>Cut</h1>
-        <p className='italic animate-pulse'>Drag a Clip or hit the "Select A Clip" button to get started</p>
+        <h1 className='text-7xl sm:text-9xl font-bold '><span className='text-orange'>SP</span>Cut</h1>
+        <p className='px-10 text-sm text-center italic sm:animate-pulse'>Drag a Clip or hit the "Select A Clip" button to get started</p>
         <label className="sec-button mt-3" htmlFor="UploadClip">
         Select A Clip
         </label>
