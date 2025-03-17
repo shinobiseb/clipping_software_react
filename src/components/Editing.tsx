@@ -43,6 +43,7 @@ export default function Editing( {
         playing={false}
         url={vidSrc} 
         onProgress={(state)=> stopAtEnd(state.playedSeconds)}
+        progressInterval={100}
         onPlay={()=> setIsPlaying(true)}
         onPause={()=> setIsPlaying(false)}
         controls={true}

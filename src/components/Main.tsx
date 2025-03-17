@@ -29,6 +29,7 @@ export default function Main() {
   const [ isMouseUp, setIsMouseUp  ] = useState<boolean>(false)
   const [ isMetaDataLoaded, setIsMetaDataLoaded] = useState<boolean>(false)
   const [ isClipTrimmed, setIsClipTrimmed ] = useState(false)
+  const [ isErrorTrimming, setIsErrorTrimming ] = useState(false)
 
   //------------------------------------------//
   //-------------- USEEFFECTS ----------------//
@@ -161,14 +162,19 @@ export default function Main() {
     const ffmpeg = new FFmpeg();
     ffmpegRef.current = ffmpeg;
     ffmpeg.on('log', ({ message }: { message: string }) => {
-      if (messageRef.current) {
-        if (message === "Aborted()") {
-          messageRef.current.innerHTML = "Clip Trim Completed!";
-        } else {
-          messageRef.current.innerHTML = message;
-        }
-      }
       console.log("FFmpeg log:", message);
+    
+      if (!messageRef.current) {
+        console.log("No message Ref");
+        return;
+      }
+    
+      if (message.includes("smaller")) {
+        console.error("Error Trimming Clip");
+        setIsErrorTrimming(true);
+      } else if (message === "Aborted()") {
+        messageRef.current.innerHTML = "Clip Trim Completed!";
+      }
     });
 
     await ffmpeg.load({
@@ -192,6 +198,7 @@ export default function Main() {
     if (!ffmpeg) return;
     const video = uploadedVidFile;
     if (!video) return;
+    clearTimeout(timeoutID)
 
     await writeInputVideo(video)
 
@@ -257,19 +264,23 @@ export default function Main() {
         uploadedVidFile ? // ------------ if Statement ------------
         <div>
           { 
+            isErrorTrimming ?
+            <div>
+              Error
+            </div> :
             isClipTrimmed ?
-            <Success
-            vidSrc={vidSrc}
-            messageRef={messageRef}
-            handleFileChange={handleFileChange}
-            />
-            :
-            <Actions
-            timeStampSeconds={timeStampSeconds}
-            handleFileChange={handleFileChange}
-            trimVideo={trimVideo}
-            reactVideo={reactVideo}
-            />
+              <Success
+              vidSrc={vidSrc}
+              messageRef={messageRef}
+              handleFileChange={handleFileChange}
+              />
+              :
+              <Actions
+              timeStampSeconds={timeStampSeconds}
+              handleFileChange={handleFileChange}
+              trimVideo={trimVideo}
+              reactVideo={reactVideo}
+              />
           }
         </div> : // ------------ Else Statement ------------
           <div className='flex flex-col h-full w-full items-center justify-center'>
