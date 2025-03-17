@@ -36,7 +36,7 @@ export default function Editing( {
     editingProps ) {
 
   return (
-    <section>
+    <section className=''>
         <ReactPlayer 
         id="ReactVideoOuterDiv" 
         playing={false}

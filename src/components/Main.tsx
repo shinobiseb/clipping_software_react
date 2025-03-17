@@ -223,7 +223,7 @@ export default function Main() {
   // Add Framer Motion?
 
   return loaded ? (
-    <main {...getRootProps()} className="flex flex-col justify-center h-full w-full items-center">
+    <main {...getRootProps()} className="flex flex-col justify-center h-full w-full items-center main-cont">
       {
         isDragActive ?
         <DropZone/> :
@@ -267,6 +267,7 @@ export default function Main() {
             timeStampSeconds={timeStampSeconds}
             handleFileChange={handleFileChange}
             trimVideo={trimVideo}
+            reactVideo={reactVideo}
             />
           }
         </div> : // ------------ Else Statement ------------
