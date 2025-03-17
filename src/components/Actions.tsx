@@ -26,7 +26,8 @@ export default function Actions( {
 
   function seekClip(targetTime : number){
     if(!reactVideo) return;
-    reactVideo.currentTime = targetTime;
+    console.log("Seeked to: ", Math.round(targetTime)/1000)
+    reactVideo.currentTime = targetTime/1000;
     reactVideo.pause()
   }
 
@@ -36,7 +37,6 @@ export default function Actions( {
         <button 
         onClick={()=> {
           seekClip(timeStampSeconds[0])
-          playClip()
         }}
         className='clip-controls'> 
           <RiSkipBackFill/>
@@ -53,7 +53,6 @@ export default function Actions( {
         <button 
         onClick={()=> {
           seekClip(timeStampSeconds[1])
-          playClip()
         }}
         className='clip-controls'> 
           <RiSkipForwardFill/>

@@ -83,6 +83,8 @@ button {
 
 .clip-controls:hover {
   cursor: pointer;
+  background-color: var(--color-yellow);
+  transition: 250ms;
 }
 
 #Slider {
