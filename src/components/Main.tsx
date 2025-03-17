@@ -254,7 +254,7 @@ export default function Main() {
       </video>
       {
         uploadedVidFile ? // ------------ if Statement ------------
-        <div className='flex w-full items-start justify-center'>
+        <div className='flex h-full w-full items-start justify-center'>
           { 
             isClipTrimmed ?
             <Success

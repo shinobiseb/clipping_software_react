@@ -39,6 +39,7 @@ export default function Editing( {
     <section className=''>
         <ReactPlayer 
         id="ReactVideoOuterDiv" 
+        width={"100%"}
         playing={false}
         url={vidSrc} 
         onProgress={(state)=> stopAtEnd(state.playedSeconds)}
