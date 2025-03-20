@@ -262,7 +262,7 @@ export default function Main() {
       </video>
       {
         uploadedVidFile ? // ------------ if Statement ------------
-        <div>
+        <div className='sm: w-1/3 flex flex-col justify-center items-center'>
           { 
             isErrorTrimming ?
             <div>

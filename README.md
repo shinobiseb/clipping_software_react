@@ -8,3 +8,6 @@
 - Reconfigure to Components
 - Add Sound Effect on Complete
 - Intro Animation
+- React Player Aesthetic Styling
+- Gray out area of clip on video play
+- Enlarge Clip Viewer

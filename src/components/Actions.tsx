@@ -5,6 +5,8 @@ import { RiSkipBackFill } from "react-icons/ri";
 import { RiSkipForwardFill } from "react-icons/ri";
 import { MdFileUpload } from "react-icons/md";
 import { PacmanLoader } from 'react-spinners';
+import { FaPlay } from "react-icons/fa";
+import { FaPause } from "react-icons/fa6";
 
 type ActionProps = {
   trimVideo: () => Promise<void>,
@@ -41,8 +43,8 @@ export default function Actions( {
       />
     </div>
     : (
-    <div className='flex flex-col items-center'>
-      <section className='flex flex-row w-full justify-evenly'>
+    <div className='flex flex-col items-center w-full'>
+      <section className='flex flex-row w-1/2 justify-evenly bg-black px-5 py-2 rounded-xl'>
         <button 
         onClick={()=> {
           seekClip(timeStampSeconds[0])
@@ -58,7 +60,18 @@ export default function Actions( {
         className='clip-controls'> 
           <MdOutlineReplay/>
         </button>
-        
+        <button 
+        onClick={()=> reactVideo?.pause()}
+        className='clip-controls'
+        >
+          <FaPause />
+        </button>
+        <button 
+        onClick={()=>playClip()}
+        className='clip-controls'
+        >
+          <FaPlay size={12}/>
+        </button>
         <button 
         onClick={()=> {
           seekClip(timeStampSeconds[1])
@@ -67,18 +80,25 @@ export default function Actions( {
           <RiSkipForwardFill/>
         </button>
       </section>
-      <span className='text-sm mt-3'>Clip Length: <span className='loading-message'>{Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000)} seconds</span></span>
-      <button className="prim-button mt-1 flex items-center justify-center w-full" onClick={()=>{
+      <section 
+      className='w-full flex flex-col justify-center items-center'>
+        <span 
+        className='text-sm mt-3'>Clip Length: <span className='loading-message'>{Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000)} seconds</span></span>
+      <button 
+      className="prim-button mt-1 flex items-center justify-center w-full" onClick={()=>{
         trimVideo()
         setLoading(true)
         }}>
-        <FaScissors className='relative right-2'/> Trim Video
+        <FaScissors 
+        className='relative right-2'/> Trim Video
       </button>
-      <label className="sec-button flex items-center justify-center" htmlFor="UploadClip">
+      <label 
+      className="sec-button flex items-center justify-center w-full" htmlFor="UploadClip">
         <MdFileUpload size={20} className='relative right-2'/>
         Another Clip
       </label>
       <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip"/>
+      </section>
     </div>
   )
 }
