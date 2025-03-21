@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactPlayer from 'react-player'
 import Slider from './Slider'
+import { motion } from 'framer-motion'
 
 type editingProps = {
     vidSrc: string,
@@ -36,7 +37,9 @@ export default function Editing( {
     editingProps ) {
 
   return (
-    <section className=''>
+    <motion.div 
+    initial={{ opacity: 0 }}
+    whileInView={{ opacity: 1}}>
         <ReactPlayer 
         id="ReactVideoOuterDiv" 
         width={"100%"}
@@ -61,6 +64,6 @@ export default function Editing( {
           videoLength={videoLength}
           />
         }
-        </section>
+        </motion.div>
   )
 }

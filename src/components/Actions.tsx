@@ -44,7 +44,7 @@ export default function Actions( {
     </div>
     : (
     <div className='flex flex-col items-center w-full'>
-      <section className='flex flex-row w-1/2 justify-evenly bg-black px-5 py-2 rounded-xl'>
+      <section className='flex flex-row w-full md:w-1/2 justify-evenly bg-black px-5 py-2 rounded-xl'>
         <button 
         onClick={()=> {
           seekClip(timeStampSeconds[0])
