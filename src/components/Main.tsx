@@ -8,6 +8,7 @@ import DropZone from './DropZone';
 import Editing from './Editing';
 import Success from './Success';
 import Actions from './Actions';
+import { PacmanLoader } from 'react-spinners';
 
 export default function Main() {
   const [loaded, setLoaded] = useState<boolean>(false);
@@ -262,7 +263,7 @@ export default function Main() {
       </video>
       {
         uploadedVidFile ? // ------------ if Statement ------------
-        <div>
+        <div className='sm: w-1/3 flex flex-col justify-center items-center'>
           { 
             isErrorTrimming ?
             <div>
@@ -297,6 +298,8 @@ export default function Main() {
       
     </main>
   ) : (
-    <h3>Loading...</h3>
+    <PacmanLoader
+        color='#D94100'
+    />
   );
 }

@@ -8,4 +8,6 @@
 - Reconfigure to Components
 - Add Sound Effect on Complete
 - Intro Animation
-- Youtube URL paste -> Editing -> Download
+- React Player Aesthetic Styling
+- Gray out area of clip on video play
+- Enlarge Clip Viewer
