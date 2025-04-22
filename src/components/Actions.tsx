@@ -27,7 +27,6 @@ export default function Actions( {
 
   function seekClip(targetTime : number){
     if(!reactVideo) return;
-    console.log("Seeked to: ", Math.round(targetTime)/1000)
     reactVideo.currentTime = targetTime/1000;
     reactVideo.pause()
   }

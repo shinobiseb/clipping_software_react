@@ -47,7 +47,7 @@ export default function Main() {
   }, [uploadedVidFile]);
 
   useEffect(()=> {
-    console.log("Video Playing? ", isPlaying)
+    // console.log("Video Playing? ", isPlaying)
   }, [isPlaying])
 
   useEffect(()=> {
@@ -76,7 +76,7 @@ export default function Main() {
   }, [activeThumb, timeStampSeconds]);
 
   useEffect(()=> {
-    console.log("MetaData Loaded?", isMetaDataLoaded)
+    // console.log("MetaData Loaded?", isMetaDataLoaded)
   }, [isMetaDataLoaded])
 
   let timeoutID : ReturnType<typeof setTimeout> | undefined;
@@ -111,9 +111,9 @@ export default function Main() {
     if(Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000) === 0) return
     if(seconds >= timeStampSeconds[1]/1000){
       reactVideo.pause()
-      console.log("stopAtEnd Fired")
+      // console.log("stopAtEnd Fired")
     } else {
-      console.log("Playhead:", seconds, "End Point:", timeStampSeconds[1]/1000)
+      // console.log("Playhead:", seconds, "End Point:", timeStampSeconds[1]/1000)
     }
   }
   
@@ -128,7 +128,7 @@ export default function Main() {
     if (videoRef.current) {
       videoRef.current.src = videoURL;
       setVidSrc(videoURL);
-      console.log('Video Loaded', videoURL);
+      // console.log('Video Loaded', videoURL);
     } else {
       console.error('Video not loaded');
     }
@@ -145,7 +145,7 @@ export default function Main() {
     if (fileArray.length > 0) {
       setUploadedVidFile(fileArray[0]);
       setIsClipTrimmed(false)
-      console.log('Video Loaded for Clipping');
+      // console.log('Video Loaded for Clipping');
     }
   }
 
@@ -154,7 +154,7 @@ export default function Main() {
     if(Number.isNaN(videoRef.current.duration)) console.error("Video Length is NaN")
     setVideoLength(videoRef.current.duration);
     setIsMetaDataLoaded(true)
-    console.log("Video Length: ", videoLength)
+    // console.log("Video Length: ", videoLength)
   }
 
   const loadFFMPEG = async () => {
@@ -162,10 +162,10 @@ export default function Main() {
     const ffmpeg = new FFmpeg();
     ffmpegRef.current = ffmpeg;
     ffmpeg.on('log', ({ message }: { message: string }) => {
-      console.log("FFmpeg log:", message);
+      // console.log("FFmpeg log:", message);
     
       if (!messageRef.current) {
-        console.log("No message Ref");
+        console.error("No message Ref");
         return;
       }
     
@@ -215,7 +215,7 @@ export default function Main() {
     let videoURL = URL.createObjectURL(new Blob([data], { type: 'video/mp4' }));
     setVidSrc(videoURL);
     setIsClipTrimmed(true)
-    console.log("Trimmed Video Loaded: ", vidSrc);
+    // console.log("Trimmed Video Loaded: ", vidSrc);
   };
 
   // -------------------------------------------- //
