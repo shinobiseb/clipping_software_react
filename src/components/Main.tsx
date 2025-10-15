@@ -19,8 +19,8 @@ export default function Main() {
     startTime: '00:00:00.0',
     endTime: '00:00:00.0',
   });
-  const reactVideoComponentRef = useRef(null)
-  const [timeStampSeconds, setTimeStampSeconds] = useState<[number, number]>([0,0])
+  const reactVideoComponentRef = useRef(null);
+  const [timeStampSeconds, setTimeStampSeconds] = useState<[number, number]>([0,0]);
   const [uploadedVidFile, setUploadedVidFile] = useState<File | null>(null);
   const [vidSrc, setVidSrc] = useState<string | null>(null);
   const [videoLength, setVideoLength] = useState<number>(0);
@@ -146,7 +146,6 @@ export default function Main() {
     if (fileArray.length > 0) {
       setUploadedVidFile(fileArray[0]);
       setIsClipTrimmed(false)
-      // console.log('Video Loaded for Clipping');
     }
   }
 

@@ -45,9 +45,7 @@ export default function Actions( {
     <div className='flex flex-col items-center w-full'>
       <section className='flex flex-row w-full md:w-1/2 justify-evenly bg-black px-5 py-2 rounded-xl'>
         <button 
-        onClick={()=> {
-          seekClip(timeStampSeconds[0])
-        }}
+        onClick={()=> { seekClip(timeStampSeconds[0]) }}
         className='clip-controls'> 
           <RiSkipBackFill/>
         </button>

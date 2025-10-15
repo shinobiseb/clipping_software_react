@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ChangeEvent } from 'react'
 import { MdDownload } from "react-icons/md";
 import { MdFileUpload } from 'react-icons/md';
@@ -9,7 +9,14 @@ type successProps = {
     handleFileChange: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
+
 export default function Success( { vidSrc, messageRef, handleFileChange } : successProps ) {
+  const [ checked, setIsChecked ] = useState(false)
+
+  function handleChecked() {
+    setIsChecked(!checked)
+  }
+
   return (
     <div  className='flex flex-col'>
       <p className='mt-3 text-center success-msg' ref={messageRef}>Trim Clipped!</p>

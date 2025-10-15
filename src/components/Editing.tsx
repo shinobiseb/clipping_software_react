@@ -18,7 +18,6 @@ type editingProps = {
         startTime: string;
         endTime: string;
     }>>
-
 }
 
 export default function Editing( { 
@@ -35,6 +34,10 @@ export default function Editing( {
     setTimeStamps
 }: 
     editingProps ) {
+
+      if(!vidSrc) {
+        console.error("No vidSrc")
+      }
 
   return (
     <motion.div 
