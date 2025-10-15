@@ -213,7 +213,7 @@ export default function Main() {
 
     await ffmpeg.exec(command);
     const data = await ffmpeg.readFile('output.mp4');
-    let videoURL = URL.createObjectURL(new Blob([data], { type: 'video/mp4' }));
+    let videoURL = URL.createObjectURL(new Blob([data as BlobPart], { type: 'video/mp4' }));
     setVidSrc(videoURL);
     setIsClipTrimmed(true)
     // console.log("Trimmed Video Loaded: ", vidSrc);
