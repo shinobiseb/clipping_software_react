@@ -1,6 +1,7 @@
 import { ChangeEvent } from 'react'
 import { DropzoneInputProps } from 'react-dropzone'
 import { MdFileUpload } from "react-icons/md";
+import { MdContactPage } from "react-icons/md";
 
 type heroProps = {
   handleFileChange: (e: ChangeEvent<HTMLInputElement>)=> void;
@@ -18,6 +19,7 @@ export default function Hero( { handleFileChange, getInputProps } : heroProps ) 
         </label>
         <input onChange={handleFileChange} className="hidden" accept="video/*" type="file" id="UploadClip" />
         <input {...getInputProps()}/>
+        <a href="https://www.sebpatin.com/" className='absolute top-10 right-10'><MdContactPage size={50} color=''/></a>
     </div>
   )
 }
