@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { ChangeEvent } from 'react'
 import { MdDownload } from "react-icons/md";
 import { MdFileUpload } from 'react-icons/md';
@@ -11,11 +11,6 @@ type successProps = {
 
 
 export default function Success( { vidSrc, messageRef, handleFileChange } : successProps ) {
-  const [ checked, setIsChecked ] = useState(false)
-
-  function handleChecked() {
-    setIsChecked(!checked)
-  }
 
   return (
     <div  className='flex flex-col'>
