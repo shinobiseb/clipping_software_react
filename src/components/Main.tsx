@@ -47,9 +47,9 @@ export default function Main() {
     }
   }, [uploadedVidFile]);
 
-  useEffect(()=> {
-    // console.log("Video Playing? ", isPlaying)
-  }, [isPlaying])
+  // useEffect(()=> {
+  //   // console.log("Video Playing? ", isPlaying)
+  // }, [isPlaying])
 
   useEffect(()=> {
     if(!reactVideo) return;
@@ -76,9 +76,9 @@ export default function Main() {
     }
   }, [activeThumb, timeStampSeconds]);
 
-  useEffect(()=> {
-    // console.log("MetaData Loaded?", isMetaDataLoaded)
-  }, [isMetaDataLoaded])
+  // useEffect(()=> {
+  //   // console.log("MetaData Loaded?", isMetaDataLoaded)
+  // }, [isMetaDataLoaded])
 
   let timeoutID : ReturnType<typeof setTimeout> | undefined;
 
@@ -129,7 +129,7 @@ export default function Main() {
     if (videoRef.current) {
       videoRef.current.src = videoURL;
       setVidSrc(videoURL);
-      // console.log('Video Loaded', videoURL);
+      console.log('Video Loaded', videoURL);
     } else {
       console.error('Video not loaded');
     }
@@ -154,7 +154,7 @@ export default function Main() {
     if(Number.isNaN(videoRef.current.duration)) console.error("Video Length is NaN")
     setVideoLength(videoRef.current.duration);
     setIsMetaDataLoaded(true)
-    // console.log("Video Length: ", videoLength)
+    console.log("Video Length: ", videoLength)
   }
 
   const loadFFMPEG = async () => {
