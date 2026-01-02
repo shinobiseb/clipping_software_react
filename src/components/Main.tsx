@@ -39,12 +39,14 @@ export default function Main() {
   useEffect(() => {
     loadFFMPEG();
     setIsMetaDataLoaded(false)
+    console.log("Is MetaDataLoaded?: ", isMetaDataLoaded)
   }, []);
 
   useEffect(() => {
     if (uploadedVidFile) {
       loadVideoIntoPreview();
     }
+    console.log("Is Playing?: ", isPlaying)
   }, [uploadedVidFile]);
 
   // useEffect(()=> {
