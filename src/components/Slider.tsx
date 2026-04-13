@@ -22,35 +22,30 @@ export default function Slider({ setThumbsAndMouse, videoLength, setTimestamps, 
 
   useEffect(() => {
     const thumbs = document.querySelectorAll(".range-slider__thumb");
-    
-    if (thumbs.length >= 2) {
-      thumbs[0].id = "startThumb";
-      thumbs[1].id = "endThumb"; 
+    if (thumbs.length < 2) return;
 
-      const startThumb = document.getElementById("startThumb");
-      const endThumb = document.getElementById("endThumb");
+    const handleStartDown = () => setThumbsAndMouse("start", false);
+    const handleStartUp = () => setThumbsAndMouse("start", true);
+    const handleEndDown = () => setThumbsAndMouse("end", false);
+    const handleEndUp = () => setThumbsAndMouse("end", true);
 
-      if(startThumb){
-        startThumb.addEventListener("mousedown", ()=>setThumbsAndMouse("start", false));
-        startThumb.addEventListener("mouseup", ()=>setThumbsAndMouse("start", true));
-      }
-      if(endThumb){
-        endThumb.addEventListener("mousedown", ()=> setThumbsAndMouse("end", false));
-        endThumb.addEventListener("mouseup", ()=> setThumbsAndMouse("end", true));
-      }
+    const [startThumb, endThumb] = thumbs;
 
-      return () => {
-        if (startThumb) {
-          startThumb.removeEventListener("mouseup", ()=>setThumbsAndMouse("start", true));
-          startThumb.removeEventListener("mousedown", ()=>setThumbsAndMouse("start", false));
-        }
-        if (endThumb){
-          endThumb.removeEventListener("mousedown", ()=> setThumbsAndMouse("end", false));
-          endThumb.removeEventListener("mouseup", ()=> setThumbsAndMouse("end", true));
-        } 
-      };
-    }
-  }, []);
+    startThumb.id = "startThumb";
+    endThumb.id = "endThumb";
+
+    startThumb.addEventListener("mousedown", handleStartDown);
+    startThumb.addEventListener("mouseup", handleStartUp);
+    endThumb.addEventListener("mousedown", handleEndDown);
+    endThumb.addEventListener("mouseup", handleEndUp);
+
+    return () => {
+      startThumb.removeEventListener("mousedown", handleStartDown);
+      startThumb.removeEventListener("mouseup", handleStartUp);
+      endThumb.removeEventListener("mousedown", handleEndDown);
+      endThumb.removeEventListener("mouseup", handleEndUp);
+    };
+  }, [setThumbsAndMouse]);
 
   // Update range when videoLength changes
   useEffect(() => {

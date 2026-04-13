@@ -41,7 +41,7 @@ export default function Editing( {
 
   return (
     <motion.div 
-    initial={{ opacity: 0 }}
+    // initial={{ opacity: 0 }}
     whileInView={{ opacity: 1}}>
         <ReactPlayer 
         id="ReactVideoOuterDiv" 
@@ -70,3 +70,4 @@ export default function Editing( {
         </motion.div>
   )
 }
+

@@ -83,8 +83,8 @@ export default function Actions( {
         className='text-sm mt-3'>Clip Length: <span className='loading-message'>{Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000)} seconds</span></span>
       <button 
       className="prim-button mt-1 flex items-center justify-center w-full" onClick={()=>{
-        trimVideo()
-        setLoading(true)
+          trimVideo()
+          setLoading(true)
         }}>
         <FaScissors 
         className='relative right-2'/> Trim Video

@@ -31,6 +31,7 @@ export default function Main() {
   const [ isMetaDataLoaded, setIsMetaDataLoaded] = useState<boolean>(false)
   const [ isClipTrimmed, setIsClipTrimmed ] = useState(false)
   const [ isErrorTrimming, setIsErrorTrimming ] = useState(false)
+  const [ videoFileType, setVideoFileType ] = useState<string>("mp4")
 
   //------------------------------------------//
   //-------------- USEEFFECTS ----------------//
@@ -44,14 +45,11 @@ export default function Main() {
 
   useEffect(() => {
     if (uploadedVidFile) {
+
       loadVideoIntoPreview();
     }
     console.log("Is Playing?: ", isPlaying)
   }, [uploadedVidFile]);
-
-  // useEffect(()=> {
-  //   // console.log("Video Playing? ", isPlaying)
-  // }, [isPlaying])
 
   useEffect(()=> {
     if(!reactVideo) return;
@@ -78,10 +76,6 @@ export default function Main() {
     }
   }, [activeThumb, timeStampSeconds]);
 
-  // useEffect(()=> {
-  //   // console.log("MetaData Loaded?", isMetaDataLoaded)
-  // }, [isMetaDataLoaded])
-
   let timeoutID : ReturnType<typeof setTimeout> | undefined;
 
   // --------- Functions --------- //
@@ -103,7 +97,7 @@ export default function Main() {
     onDrop,
     multiple: false,
     accept: {
-      "video/mp4": []
+      "video": []
     },
     noClick: true,
   })
@@ -114,10 +108,8 @@ export default function Main() {
     if(Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000) === 0) return
     if(seconds >= timeStampSeconds[1]/1000){
       reactVideo.pause()
-      // console.log("stopAtEnd Fired")
-    } else {
-      // console.log("Playhead:", seconds, "End Point:", timeStampSeconds[1]/1000)
     }
+    return
   }
   
   function setThumbsAndMouse(thumb :  "start" | "end", isMouseUp: boolean){
@@ -128,6 +120,7 @@ export default function Main() {
   async function loadVideoIntoPreview() {
     if (!uploadedVidFile) return;
     const videoURL = URL.createObjectURL(uploadedVidFile);
+    console.log("Load Video into Preview Fired!")
     if (videoRef.current) {
       videoRef.current.src = videoURL;
       setVidSrc(videoURL);
@@ -140,12 +133,14 @@ export default function Main() {
   function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
       handleFile(e.target.files)
+      
     }
   }
 
   function handleFile( files : FileList | File[]) {
   const fileArray = files instanceof FileList ? Array.from(files) : files;
     if (fileArray.length > 0) {
+      console.log("File in Handle File: ", fileArray[0])
       setUploadedVidFile(fileArray[0]);
       setIsClipTrimmed(false)
     }
@@ -160,31 +155,28 @@ export default function Main() {
   }
 
   const loadFFMPEG = async () => {
+    if (ffmpegRef.current) return;
+
     const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
     const ffmpeg = new FFmpeg();
-    ffmpegRef.current = ffmpeg;
-    ffmpeg.on('log', ({ message }: { message: string }) => {
-      // console.log("FFmpeg log:", message);
     
-      if (!messageRef.current) {
-        console.error("No message Ref");
-        return;
-      }
-    
+    ffmpeg.on('log', ({ message }) => {
       if (message.includes("smaller")) {
-        console.error("Error Trimming Clip");
         setIsErrorTrimming(true);
-      } else if (message === "Aborted()") {
-        messageRef.current.innerHTML = "Clip Trim Completed!";
       }
     });
 
-    await ffmpeg.load({
-      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-      wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-    });
+    try {
+      await ffmpeg.load({
+        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+      });
 
-    setLoaded(true);
+      ffmpegRef.current = ffmpeg;
+      setLoaded(true);
+    } catch (err) {
+      console.error("FFmpeg Load Error:", err);
+    }
   };
 
   const writeInputVideo = async (video:File) => {
@@ -217,19 +209,7 @@ export default function Main() {
     let videoURL = URL.createObjectURL(new Blob([data as BlobPart], { type: 'video/mp4' }));
     setVidSrc(videoURL);
     setIsClipTrimmed(true)
-    // console.log("Trimmed Video Loaded: ", vidSrc);
   };
-
-  // -------------------------------------------- //
-  // ---------------- Return -------------------- //
-  // -------------------------------------------- //
-
-  //Reconfigure to components
-  // - OnDrag Component
-  // - Select Clip Component
-  // - Hero Component
-
-  // Add Framer Motion?
 
   return loaded ? (
     <main {...getRootProps()} 
