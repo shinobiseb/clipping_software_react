@@ -238,7 +238,19 @@ export default function Main() {
     await ffmpeg.exec(command);
 
     const data = await ffmpeg.readFile(outputName);
-    const videoURL = URL.createObjectURL(new Blob([data as BlobPart]));
+
+    // Map your state to the standard MIME subtypes
+    const mimeMap: Record<string, string> = {
+      mp4: 'video/mp4',
+      webm: 'video/webm',
+      mov: 'video/quicktime',
+      mkv: 'video/x-matroska',
+    };
+
+    const mimeType = mimeMap[videoFileType] || 'video/mp4'; 
+
+    const videoBlob = new Blob([data as BlobPart], { type: mimeType });
+    const videoURL = URL.createObjectURL(videoBlob);
 
     setVidSrc(videoURL);
     setIsClipTrimmed(true);
