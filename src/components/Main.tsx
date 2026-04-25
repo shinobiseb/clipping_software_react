@@ -32,7 +32,7 @@ export default function Main() {
   const [ isMetaDataLoaded, setIsMetaDataLoaded] = useState<boolean>(false)
   const [ isClipTrimmed, setIsClipTrimmed ] = useState(false)
   const [ isErrorTrimming, setIsErrorTrimming ] = useState(false)
-  const [ videoFileType, setVideoFileType ] = useState<"mp4" | "mkv" | "mov" | "webm" | null>(null)
+  const [ videoFileType, setVideoFileType ] = useState<"mp4" | "mkv" | "mov" | "webm" >("mp4")
 
   //------------------------------------------//
   //-------------- USEEFFECTS ----------------//
@@ -284,6 +284,7 @@ export default function Main() {
             </div> :
             isClipTrimmed ?
               <Success
+              outputType={videoFileType}
               vidSrc={vidSrc}
               messageRef={messageRef}
               handleFileChange={handleFileChange}
