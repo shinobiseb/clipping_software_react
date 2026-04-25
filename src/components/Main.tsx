@@ -239,7 +239,6 @@ export default function Main() {
 
     const data = await ffmpeg.readFile(outputName);
 
-    // Map your state to the standard MIME subtypes
     const mimeMap: Record<string, string> = {
       mp4: 'video/mp4',
       webm: 'video/webm',

@@ -27,7 +27,7 @@ export default function Editing({
   setTimeStamps
 }: EditingProps) {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full sm:w-3/4 max-w-3xl">
       <div id="ReactVideoOuterDiv">
         <ReactPlayer
           key={vidSrc}
