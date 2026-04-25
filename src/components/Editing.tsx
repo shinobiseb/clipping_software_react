@@ -1,73 +1,56 @@
-import React from 'react'
-import ReactPlayer from 'react-player'
-import Slider from './Slider'
-import { motion } from 'framer-motion'
+import ReactPlayer from 'react-player';
+import Slider from './Slider';
+import { motion } from 'framer-motion';
 
-type editingProps = {
-    vidSrc: string,
-    stopAtEnd(seconds: number): void,
-    setIsPlaying: (value: React.SetStateAction<boolean>) => void,
-    reactVideoComponentRef: React.RefObject<null>,
-    isClipTrimmed: boolean, 
-    reactVideo: HTMLVideoElement | null | undefined,
-    setThumbsAndMouse: (thumb: "start" | "end", isMouseUp: boolean) => void,
-    timeStampSeconds: [number, number];
-    setTimeStampSeconds:React.Dispatch<React.SetStateAction<[number, number]>>;
-    videoLength: number;
-    setTimeStamps: React.Dispatch<React.SetStateAction<{
-        startTime: string;
-        endTime: string;
-    }>>
+interface EditingProps {
+  vidSrc: string;
+  stopAtEnd: (seconds: number) => void;
+  setIsPlaying: (playing: boolean) => void;
+  reactVideoComponentRef: React.RefObject<ReactPlayer> | React.RefObject<null>;
+  isClipTrimmed: boolean;
+  setThumbsAndMouse: (thumb: "start" | "end", isMouseUp: boolean) => void;
+  timeStampSeconds: [number, number];
+  setTimeStampSeconds: React.Dispatch<React.SetStateAction<[number, number]>>;
+  videoLength: number;
+  setTimeStamps: React.Dispatch<React.SetStateAction<{ startTime: string; endTime: string }>>;
 }
 
-export default function Editing( { 
-    vidSrc, 
-    stopAtEnd, 
-    setIsPlaying, 
-    reactVideoComponentRef,
-    isClipTrimmed,
-    reactVideo,
-    setThumbsAndMouse,
-    timeStampSeconds,
-    setTimeStampSeconds,
-    videoLength,
-    setTimeStamps
-}: 
-    editingProps ) {
-
-      if(!vidSrc) {
-        console.error("No vidSrc")
-      }
-
+export default function Editing({
+  vidSrc,
+  stopAtEnd,
+  reactVideoComponentRef,
+  isClipTrimmed,
+  setThumbsAndMouse,
+  timeStampSeconds,
+  setTimeStampSeconds,
+  videoLength,
+  setTimeStamps
+}: EditingProps) {
   return (
-    <motion.div 
-    // initial={{ opacity: 0 }}
-    whileInView={{ opacity: 1}}>
-        <ReactPlayer 
-        id="ReactVideoOuterDiv" 
-        width={"100%"}
-        playing={false}
-        url={vidSrc} 
-        onProgress={(state)=> stopAtEnd(state.playedSeconds)}
-        progressInterval={100}
-        onPlay={()=> setIsPlaying(true)}
-        onPause={()=> setIsPlaying(false)}
-        controls={true}
-        ref={reactVideoComponentRef}
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full">
+      <div id="ReactVideoOuterDiv">
+        <ReactPlayer
+          key={vidSrc}
+          ref={reactVideoComponentRef}
+          url={vidSrc}
+          width="100%"
+          height="auto"
+          controls
+          onProgress={(state) => stopAtEnd(state.playedSeconds)}
+          progressInterval={100}
         />
-        {
-          isClipTrimmed ? 
-          null : 
-          <Slider 
-          videoPlayer={reactVideo}
-          setThumbsAndMouse={setThumbsAndMouse} 
-          timestamps={timeStampSeconds} 
-          setTimeStampSeconds={setTimeStampSeconds} 
-          setTimestamps={setTimeStamps} 
-          videoLength={videoLength}
-          />
-        }
-        </motion.div>
-  )
-}
+      </div>
 
+      {!isClipTrimmed && (
+        <Slider
+          videoPlayer={reactVideoComponentRef.current?.getInternalPlayer() as HTMLVideoElement}
+          setThumbsAndMouse={setThumbsAndMouse}
+          timestamps={timeStampSeconds}
+          setTimeStampSeconds={setTimeStampSeconds}
+          setTimestamps={setTimeStamps}
+          videoLength={videoLength}
+        />
+      )}
+    </motion.div>
+  );
+}

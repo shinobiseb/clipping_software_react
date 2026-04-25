@@ -19,19 +19,20 @@ export default function Main() {
     startTime: '00:00:00.0',
     endTime: '00:00:00.0',
   });
+
   const reactVideoComponentRef = useRef(null);
   const [timeStampSeconds, setTimeStampSeconds] = useState<[number, number]>([0,0]);
   const [uploadedVidFile, setUploadedVidFile] = useState<File | null>(null);
   const [vidSrc, setVidSrc] = useState<string | null>(null);
   const [videoLength, setVideoLength] = useState<number>(0);
   const reactVideo = document.getElementById("ReactVideoOuterDiv")?.querySelector("video")
-  const [activeThumb, setThumbs] = useState< "start" | "end" | "none">("start")
+  const [ activeThumb, setThumbs] = useState< "start" | "end" | "none">("start")
   const [ isPlaying, setIsPlaying  ] = useState<boolean>(false)
   const [ isMouseUp, setIsMouseUp  ] = useState<boolean>(false)
   const [ isMetaDataLoaded, setIsMetaDataLoaded] = useState<boolean>(false)
   const [ isClipTrimmed, setIsClipTrimmed ] = useState(false)
   const [ isErrorTrimming, setIsErrorTrimming ] = useState(false)
-  const [ videoFileType, setVideoFileType ] = useState<string>("mp4")
+  const [ videoFileType, setVideoFileType ] = useState<"mp4" | "mkv" | "mov" | "webm" | null>(null)
 
   //------------------------------------------//
   //-------------- USEEFFECTS ----------------//
@@ -45,8 +46,8 @@ export default function Main() {
 
   useEffect(() => {
     if (uploadedVidFile) {
-
       loadVideoIntoPreview();
+      console.log("Video File Type: ", videoFileType)
     }
     console.log("Is Playing?: ", isPlaying)
   }, [uploadedVidFile]);
@@ -93,18 +94,18 @@ export default function Main() {
   const onDrop = useCallback((acceptedFiles : Array<File>) => {
     handleFile(acceptedFiles)
   }, [handleFile])
+
   const {getRootProps, getInputProps, isDragActive} = useDropzone({
     onDrop,
     multiple: false,
     accept: {
-      "video": []
+      'video/*': ['.mp4', '.mkv', '.mov', '.webm']
     },
     noClick: true,
   })
 
   function stopAtEnd( seconds : number){
     if(!reactVideo) return
-    //Workaround for Video Length
     if(Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000) === 0) return
     if(seconds >= timeStampSeconds[1]/1000){
       reactVideo.pause()
@@ -133,16 +134,19 @@ export default function Main() {
   function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
       handleFile(e.target.files)
-      
     }
   }
 
-  function handleFile( files : FileList | File[]) {
-  const fileArray = files instanceof FileList ? Array.from(files) : files;
+  function handleFile(files: FileList | File[]) {
+    const fileArray = files instanceof FileList ? Array.from(files) : files;
+    
     if (fileArray.length > 0) {
-      console.log("File in Handle File: ", fileArray[0])
-      setUploadedVidFile(fileArray[0]);
-      setIsClipTrimmed(false)
+      const file = fileArray;
+      const detectedType = parseVideoType(file[0].type);
+      console.log("New Type determined:", detectedType);
+      setUploadedVidFile(file[0]);
+      setVideoFileType(detectedType); 
+      setIsClipTrimmed(false);
     }
   }
 
@@ -154,6 +158,30 @@ export default function Main() {
     console.log("Video Length: ", videoLength)
   }
 
+  type VideoExtension = "mp4" | "mkv" | "mov" | "webm";
+
+  function parseVideoType(type: string): VideoExtension {
+    const subType = type.split('/');
+
+    const mimeMap: Record<string, VideoExtension> = {
+      'mp4': 'mp4',
+      'x-matroska': 'mkv',
+      'quicktime': 'mov',
+      'webm': 'webm',
+      'x-webm': 'webm' 
+    };
+  
+    const result = mimeMap[subType[1]];
+    console.log("MIME TYPE: ",result)
+  
+    if (!result) {
+      console.error("Unsupported MIME type: ", type);
+      throw new Error(`Unsupported video type: ${type}`);
+    }
+  
+    return result;
+  }
+
   const loadFFMPEG = async () => {
     if (ffmpegRef.current) return;
 
@@ -161,6 +189,7 @@ export default function Main() {
     const ffmpeg = new FFmpeg();
     
     ffmpeg.on('log', ({ message }) => {
+      console.log(message)
       if (message.includes("smaller")) {
         setIsErrorTrimming(true);
       }
@@ -184,31 +213,35 @@ export default function Main() {
     if(!ffmpeg) return;
     const arrayBuffer = await video.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
-    await ffmpeg.writeFile('input.mp4', uint8Array);
+    await ffmpeg.writeFile(`input.${videoFileType}`, uint8Array);
   }
 
   const trimVideo = async () => {
     const ffmpeg = ffmpegRef.current;
-    if (!ffmpeg) return;
     const video = uploadedVidFile;
-    if (!video) return;
-    clearTimeout(timeoutID)
+    if (!ffmpeg || !video || !videoFileType) return;
 
-    await writeInputVideo(video)
+    await writeInputVideo(video);
 
-    if (!timestamps.startTime || !timestamps.endTime) {
-      console.error('StartRef or EndRef Not Valid');
-      console.table([timestamps.startTime, timestamps.endTime]);
-      return;
-    }
+    const inputName = `input.${videoFileType}`;
+    const outputName = `output.${videoFileType}`;
 
-    const command = ['-ss', timestamps.startTime, '-to', timestamps.endTime, '-i', 'input.mp4', '-c', 'copy', 'output.mp4'];
+    let command = [
+      '-ss', timestamps.startTime,
+      '-to', timestamps.endTime,
+      '-i', inputName,
+      '-c', 'copy'
+    ];
+
+    command.push(outputName);
 
     await ffmpeg.exec(command);
-    const data = await ffmpeg.readFile('output.mp4');
-    let videoURL = URL.createObjectURL(new Blob([data as BlobPart], { type: 'video/mp4' }));
+
+    const data = await ffmpeg.readFile(outputName);
+    const videoURL = URL.createObjectURL(new Blob([data as BlobPart]));
+
     setVidSrc(videoURL);
-    setIsClipTrimmed(true)
+    setIsClipTrimmed(true);
   };
 
   return loaded ? (
@@ -226,7 +259,6 @@ export default function Main() {
       stopAtEnd={stopAtEnd}
       setIsPlaying={setIsPlaying}
       reactVideoComponentRef={reactVideoComponentRef}
-      reactVideo={reactVideo}
       isClipTrimmed={isClipTrimmed}
       setThumbsAndMouse={setThumbsAndMouse}
       timeStampSeconds={timeStampSeconds}

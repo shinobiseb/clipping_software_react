@@ -19,7 +19,7 @@ export default function Actions( {
   trimVideo, 
   handleFileChange, 
   timeStampSeconds,
-  reactVideo
+  reactVideo,
   } : ActionProps ) {
 
   function playClip(){
@@ -81,8 +81,23 @@ export default function Actions( {
       className='w-full flex flex-col justify-center items-center'>
         <span 
         className='text-sm mt-3'>Clip Length: <span className='loading-message'>{Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000)} seconds</span></span>
+      {/* //Dropdown */}
+      {/* <span className='w-full flex flex-row justify-center items-center'>
+        <label htmlFor="videoType">Output Type:</label>
+        <select 
+          className='bg-orange px-2 py-1 ml-1 my-2 rounded-sm' name="videoType" 
+          id="videoType"
+          value={outputType}
+          onChange={(e) => setOutputType(e.target.value as "mp4" | "webm" | "mkv" | "mov")}
+  >
+          <option value="mp4">MP4</option>
+          <option value="webm">WEBM</option>
+          <option value="mov">MOV</option>
+          <option value="mkv">MKV</option>
+        </select>
+      </span> */}
       <button 
-      className="prim-button mt-1 flex items-center justify-center w-full" onClick={()=>{
+      className="prim-button flex items-center justify-center w-full" onClick={()=>{
           trimVideo()
           setLoading(true)
         }}>
