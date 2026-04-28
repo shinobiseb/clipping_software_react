@@ -19,19 +19,20 @@ export default function Main() {
     startTime: '00:00:00.0',
     endTime: '00:00:00.0',
   });
-  const reactVideoComponentRef = useRef(null)
-  const [timeStampSeconds, setTimeStampSeconds] = useState<[number, number]>([0,0])
+
+  const reactVideoComponentRef = useRef(null);
+  const [timeStampSeconds, setTimeStampSeconds] = useState<[number, number]>([0,0]);
   const [uploadedVidFile, setUploadedVidFile] = useState<File | null>(null);
   const [vidSrc, setVidSrc] = useState<string | null>(null);
   const [videoLength, setVideoLength] = useState<number>(0);
   const reactVideo = document.getElementById("ReactVideoOuterDiv")?.querySelector("video")
-  const [activeThumb, setThumbs] = useState< "start" | "end" | "none">("start")
+  const [ activeThumb, setThumbs] = useState< "start" | "end" | "none">("start")
   const [ isPlaying, setIsPlaying  ] = useState<boolean>(false)
   const [ isMouseUp, setIsMouseUp  ] = useState<boolean>(false)
   const [ isMetaDataLoaded, setIsMetaDataLoaded] = useState<boolean>(false)
   const [ isClipTrimmed, setIsClipTrimmed ] = useState(false)
   const [ isErrorTrimming, setIsErrorTrimming ] = useState(false)
-  const [ deleteOriginalClip, setDeleteOriginalClip ] = useState(false)
+  const [ videoFileType, setVideoFileType ] = useState<"mp4" | "mkv" | "mov" | "webm" >("mp4")
 
   //------------------------------------------//
   //-------------- USEEFFECTS ----------------//
@@ -40,17 +41,16 @@ export default function Main() {
   useEffect(() => {
     loadFFMPEG();
     setIsMetaDataLoaded(false)
+    console.log("Is MetaDataLoaded?: ", isMetaDataLoaded)
   }, []);
 
   useEffect(() => {
     if (uploadedVidFile) {
       loadVideoIntoPreview();
+      console.log("Video File Type: ", videoFileType)
     }
+    console.log("Is Playing?: ", isPlaying)
   }, [uploadedVidFile]);
-
-  useEffect(()=> {
-    // console.log("Video Playing? ", isPlaying)
-  }, [isPlaying])
 
   useEffect(()=> {
     if(!reactVideo) return;
@@ -77,10 +77,6 @@ export default function Main() {
     }
   }, [activeThumb, timeStampSeconds]);
 
-  useEffect(()=> {
-    // console.log("MetaData Loaded?", isMetaDataLoaded)
-  }, [isMetaDataLoaded])
-
   let timeoutID : ReturnType<typeof setTimeout> | undefined;
 
   // --------- Functions --------- //
@@ -98,25 +94,23 @@ export default function Main() {
   const onDrop = useCallback((acceptedFiles : Array<File>) => {
     handleFile(acceptedFiles)
   }, [handleFile])
+
   const {getRootProps, getInputProps, isDragActive} = useDropzone({
     onDrop,
     multiple: false,
     accept: {
-      "video/mp4": []
+      'video/*': ['.mp4', '.mkv', '.mov', '.webm']
     },
     noClick: true,
   })
 
   function stopAtEnd( seconds : number){
     if(!reactVideo) return
-    //Workaround for Video Length
     if(Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000) === 0) return
     if(seconds >= timeStampSeconds[1]/1000){
       reactVideo.pause()
-      // console.log("stopAtEnd Fired")
-    } else {
-      // console.log("Playhead:", seconds, "End Point:", timeStampSeconds[1]/1000)
     }
+    return
   }
   
   function setThumbsAndMouse(thumb :  "start" | "end", isMouseUp: boolean){
@@ -127,10 +121,11 @@ export default function Main() {
   async function loadVideoIntoPreview() {
     if (!uploadedVidFile) return;
     const videoURL = URL.createObjectURL(uploadedVidFile);
+    console.log("Load Video into Preview Fired!")
     if (videoRef.current) {
       videoRef.current.src = videoURL;
       setVidSrc(videoURL);
-      // console.log('Video Loaded', videoURL);
+      console.log('Video Loaded', videoURL);
     } else {
       console.error('Video not loaded');
     }
@@ -142,12 +137,16 @@ export default function Main() {
     }
   }
 
-  function handleFile( files : FileList | File[]) {
-  const fileArray = files instanceof FileList ? Array.from(files) : files;
+  function handleFile(files: FileList | File[]) {
+    const fileArray = files instanceof FileList ? Array.from(files) : files;
+    
     if (fileArray.length > 0) {
-      setUploadedVidFile(fileArray[0]);
-      setIsClipTrimmed(false)
-      // console.log('Video Loaded for Clipping');
+      const file = fileArray;
+      const detectedType = parseVideoType(file[0].type);
+      console.log("New Type determined:", detectedType);
+      setUploadedVidFile(file[0]);
+      setVideoFileType(detectedType); 
+      setIsClipTrimmed(false);
     }
   }
 
@@ -156,35 +155,57 @@ export default function Main() {
     if(Number.isNaN(videoRef.current.duration)) console.error("Video Length is NaN")
     setVideoLength(videoRef.current.duration);
     setIsMetaDataLoaded(true)
-    // console.log("Video Length: ", videoLength)
+    console.log("Video Length: ", videoLength)
+  }
+
+  type VideoExtension = "mp4" | "mkv" | "mov" | "webm";
+
+  function parseVideoType(type: string): VideoExtension {
+    const subType = type.split('/');
+
+    const mimeMap: Record<string, VideoExtension> = {
+      'mp4': 'mp4',
+      'x-matroska': 'mkv',
+      'quicktime': 'mov',
+      'webm': 'webm',
+      'x-webm': 'webm' 
+    };
+  
+    const result = mimeMap[subType[1]];
+    console.log("MIME TYPE: ",result)
+  
+    if (!result) {
+      console.error("Unsupported MIME type: ", type);
+      throw new Error(`Unsupported video type: ${type}`);
+    }
+  
+    return result;
   }
 
   const loadFFMPEG = async () => {
+    if (ffmpegRef.current) return;
+
     const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
     const ffmpeg = new FFmpeg();
-    ffmpegRef.current = ffmpeg;
-    ffmpeg.on('log', ({ message }: { message: string }) => {
-      // console.log("FFmpeg log:", message);
     
-      if (!messageRef.current) {
-        console.error("No message Ref");
-        return;
-      }
-    
+    ffmpeg.on('log', ({ message }) => {
+      console.log(message)
       if (message.includes("smaller")) {
-        console.error("Error Trimming Clip");
         setIsErrorTrimming(true);
-      } else if (message === "Aborted()") {
-        messageRef.current.innerHTML = "Clip Trim Completed!";
       }
     });
 
-    await ffmpeg.load({
-      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-      wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-    });
+    try {
+      await ffmpeg.load({
+        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+      });
 
-    setLoaded(true);
+      ffmpegRef.current = ffmpeg;
+      setLoaded(true);
+    } catch (err) {
+      console.error("FFmpeg Load Error:", err);
+    }
   };
 
   const writeInputVideo = async (video:File) => {
@@ -192,44 +213,47 @@ export default function Main() {
     if(!ffmpeg) return;
     const arrayBuffer = await video.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
-    await ffmpeg.writeFile('input.mp4', uint8Array);
+    await ffmpeg.writeFile(`input.${videoFileType}`, uint8Array);
   }
 
   const trimVideo = async () => {
     const ffmpeg = ffmpegRef.current;
-    if (!ffmpeg) return;
     const video = uploadedVidFile;
-    if (!video) return;
-    clearTimeout(timeoutID)
+    if (!ffmpeg || !video || !videoFileType) return;
 
-    await writeInputVideo(video)
+    await writeInputVideo(video);
 
-    if (!timestamps.startTime || !timestamps.endTime) {
-      console.error('StartRef or EndRef Not Valid');
-      console.table([timestamps.startTime, timestamps.endTime]);
-      return;
-    }
+    const inputName = `input.${videoFileType}`;
+    const outputName = `output.${videoFileType}`;
 
-    const command = ['-ss', timestamps.startTime, '-to', timestamps.endTime, '-i', 'input.mp4', '-c', 'copy', 'output.mp4'];
+    let command = [
+      '-ss', timestamps.startTime,
+      '-to', timestamps.endTime,
+      '-i', inputName,
+      '-c', 'copy'
+    ];
+
+    command.push(outputName);
 
     await ffmpeg.exec(command);
-    const data = await ffmpeg.readFile('output.mp4');
-    let videoURL = URL.createObjectURL(new Blob([data], { type: 'video/mp4' }));
+
+    const data = await ffmpeg.readFile(outputName);
+
+    const mimeMap: Record<string, string> = {
+      mp4: 'video/mp4',
+      webm: 'video/webm',
+      mov: 'video/quicktime',
+      mkv: 'video/x-matroska',
+    };
+
+    const mimeType = mimeMap[videoFileType] || 'video/mp4'; 
+
+    const videoBlob = new Blob([data as BlobPart], { type: mimeType });
+    const videoURL = URL.createObjectURL(videoBlob);
+
     setVidSrc(videoURL);
-    setIsClipTrimmed(true)
-    // console.log("Trimmed Video Loaded: ", vidSrc);
+    setIsClipTrimmed(true);
   };
-
-  // -------------------------------------------- //
-  // ---------------- Return -------------------- //
-  // -------------------------------------------- //
-
-  //Reconfigure to components
-  // - OnDrag Component
-  // - Select Clip Component
-  // - Hero Component
-
-  // Add Framer Motion?
 
   return loaded ? (
     <main {...getRootProps()} 
@@ -246,7 +270,6 @@ export default function Main() {
       stopAtEnd={stopAtEnd}
       setIsPlaying={setIsPlaying}
       reactVideoComponentRef={reactVideoComponentRef}
-      reactVideo={reactVideo}
       isClipTrimmed={isClipTrimmed}
       setThumbsAndMouse={setThumbsAndMouse}
       timeStampSeconds={timeStampSeconds}
@@ -272,6 +295,7 @@ export default function Main() {
             </div> :
             isClipTrimmed ?
               <Success
+              outputType={videoFileType}
               vidSrc={vidSrc}
               messageRef={messageRef}
               handleFileChange={handleFileChange}

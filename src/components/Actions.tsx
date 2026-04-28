@@ -19,7 +19,7 @@ export default function Actions( {
   trimVideo, 
   handleFileChange, 
   timeStampSeconds,
-  reactVideo
+  reactVideo,
   } : ActionProps ) {
 
   function playClip(){
@@ -43,11 +43,10 @@ export default function Actions( {
     </div>
     : (
     <div className='flex flex-col items-center w-full'>
-      <section className='flex flex-row w-full md:w-1/2 justify-evenly bg-black px-5 py-2 rounded-xl'>
+      {/* Playback */}
+      <section className='flex flex-row w-full justify-evenly bg-black px-5 py-2 rounded-xl max-w-[220px]'>
         <button 
-        onClick={()=> {
-          seekClip(timeStampSeconds[0])
-        }}
+        onClick={()=> { seekClip(timeStampSeconds[0]) }}
         className='clip-controls'> 
           <RiSkipBackFill/>
         </button>
@@ -84,9 +83,9 @@ export default function Actions( {
         <span 
         className='text-sm mt-3'>Clip Length: <span className='loading-message'>{Math.round((timeStampSeconds[1]- timeStampSeconds[0])/1000)} seconds</span></span>
       <button 
-      className="prim-button mt-1 flex items-center justify-center w-full" onClick={()=>{
-        trimVideo()
-        setLoading(true)
+      className="prim-button flex items-center justify-center w-full" onClick={()=>{
+          trimVideo()
+          setLoading(true)
         }}>
         <FaScissors 
         className='relative right-2'/> Trim Video
