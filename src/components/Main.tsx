@@ -31,6 +31,7 @@ export default function Main() {
   const [ isMetaDataLoaded, setIsMetaDataLoaded] = useState<boolean>(false)
   const [ isClipTrimmed, setIsClipTrimmed ] = useState(false)
   const [ isErrorTrimming, setIsErrorTrimming ] = useState(false)
+  const [ deleteOriginalClip, setDeleteOriginalClip ] = useState(false)
 
   //------------------------------------------//
   //-------------- USEEFFECTS ----------------//
